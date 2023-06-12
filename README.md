@@ -30,3 +30,30 @@ poetry install
 ```bash
 poetry shell
 ```
+
+
+## Run linters
+
+To run linters you need to do all steps from [First time setup](#first-time-setup) section.
+
+Linters order below is a preferred way to run and fix them one by one.
+
+1. Mypy.
+```bash
+mypy
+```
+
+2. Ruff.
+```bash
+ruff check src
+```
+
+3. Flake8.
+```bash
+flake8
+```
+
+4. Pylint.
+```bash
+pylint src
+```
