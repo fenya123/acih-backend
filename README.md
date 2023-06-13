@@ -23,7 +23,7 @@ git config user.email "john.doe@mail.com"
 
 2. Create virtual environment and install dependencies.
 ```bash
-poetry install
+poetry install --with lint
 ```
 
 3. Activate virual environment.
