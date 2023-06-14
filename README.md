@@ -23,7 +23,7 @@ git config user.email "john.doe@mail.com"
 
 2. Create virtual environment and install dependencies.
 ```bash
-poetry install --with lint
+poetry install --with lint,test
 ```
 
 3. Activate virual environment.
@@ -56,4 +56,19 @@ flake8
 4. Pylint.
 ```bash
 pylint src
+```
+
+
+## Run tests
+
+To run tests you need to do all steps from [First time setup](#first-time-setup) section.
+
+- Pytest.
+```bash
+pytest --cov
+```
+
+- Coverage report.
+```bash
+coverage html
 ```
