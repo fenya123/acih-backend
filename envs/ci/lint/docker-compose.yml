@@ -1,0 +1,27 @@
+name: acih-ci-lint
+
+services:
+  app-build: &app-build
+    build:
+      context: ../../..  # path from the current file to the project root dir
+      dockerfile: envs/ci/lint/Dockerfile  # path from the project root dir to the Dockerfile
+
+  mypy:
+    <<: *app-build
+    entrypoint: mypy
+
+  ruff:
+    <<: *app-build
+    entrypoint: ruff check src tests
+
+  flake8:
+    <<: *app-build
+    entrypoint: flake8
+
+  pylint:
+    <<: *app-build
+    entrypoint: pylint src tests
+
+  poetry-lock-check:
+    <<: *app-build
+    entrypoint: poetry lock --check

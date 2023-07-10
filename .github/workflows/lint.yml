@@ -1,0 +1,69 @@
+name: Lint
+run-name: Lint commit "${{ github.sha }}"
+
+on: push
+jobs:
+  mypy:
+    name: Mypy
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build mypy
+        run: docker compose --file envs/ci/lint/docker-compose.yml build mypy
+
+      - name: Run mypy
+        run: docker compose --file envs/ci/lint/docker-compose.yml run mypy
+
+  ruff:
+    name: Ruff
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build ruff
+        run: docker compose --file envs/ci/lint/docker-compose.yml build ruff
+
+      - name: Run ruff
+        run: docker compose --file envs/ci/lint/docker-compose.yml run ruff
+
+  flake8:
+    name: Flake8
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build flake8
+        run: docker compose --file envs/ci/lint/docker-compose.yml build flake8
+
+      - name: Run flake8
+        run: docker compose --file envs/ci/lint/docker-compose.yml run flake8
+
+  pylint:
+    name: Pylint
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build pylint
+        run: docker compose --file envs/ci/lint/docker-compose.yml build pylint
+
+      - name: Run pylint
+        run: docker compose --file envs/ci/lint/docker-compose.yml run pylint
+
+  poetry-lock-check:
+    name: Poetry lock check
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build Poetry lock check
+        run: docker compose --file envs/ci/lint/docker-compose.yml build poetry-lock-check
+
+      - name: Run poetry-lock-check
+        run: docker compose --file envs/ci/lint/docker-compose.yml run poetry-lock-check
