@@ -1,9 +1,9 @@
-version: "3.8"
+name: acih-ci
 
 services:
   app-build: &app-build
     build:
-      context: ../..  # path from the corrent file to the project root dir
+      context: ../..  # path from the current file to the project root dir
       dockerfile: envs/ci/Dockerfile  # path from the project root dir to the Dockerfile
 
   mypy:
@@ -21,3 +21,7 @@ services:
   pylint:
     <<: *app-build
     entrypoint: pylint src
+
+  poetry-lock-check:
+    <<: *app-build
+    entrypoint: poetry lock --check

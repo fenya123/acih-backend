@@ -12,8 +12,6 @@ RUN poetry config virtualenvs.create false
 
 COPY poetry.lock pyproject.toml ./
 
-RUN poetry lock --check
-
-RUN poetry install --with=lint,test
+RUN poetry install --with=lint
 
 COPY . ./

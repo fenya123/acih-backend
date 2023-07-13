@@ -54,3 +54,16 @@ jobs:
 
       - name: Run pylint
         run: docker compose --file envs/ci/docker-compose.yml run pylint
+
+  poetry-lock-check:
+    name: Poetry lock check
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Build Poetry lock check
+        run: docker compose --file envs/ci/docker-compose.yml build poetry-lock-check
+
+      - name: Run poetry-lock-check
+        run: docker compose --file envs/ci/docker-compose.yml run poetry-lock-check
