@@ -1,9 +1,9 @@
-name: acih-ci
+name: acih-ci-lint
 
 services:
   app-build: &app-build
     build:
-      context: ../..  # path from the current file to the project root dir
+      context: ../../..  # path from the current file to the project root dir
       dockerfile: envs/ci/Dockerfile  # path from the project root dir to the Dockerfile
 
   mypy:
