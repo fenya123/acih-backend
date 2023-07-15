@@ -2,6 +2,7 @@
 
 filename =
     ./src/*,
+    ./tests/*,
 
 exclude =
     __pycache__,
@@ -156,6 +157,12 @@ ignore =
     # ======
     # {name} is too complex ({complexity} > {max_complexity})
     C901,
+
+per-file-ignores =
+    # files with tests
+    tests/*test_*:
+        # Missing docstring
+        D,
 
 
 # NEXT WILL BE LISTED SOME OPTIONS USED BY PLUGINS

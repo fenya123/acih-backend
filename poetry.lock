@@ -372,6 +372,17 @@ spelling = ["pyenchant (>=3.2,<4.0)"]
 testutils = ["gitpython (>3)"]
 
 [[package]]
+name = "pylint-per-file-ignores"
+version = "1.2.1"
+description = "A pylint plugin to ignore error codes per file."
+optional = false
+python-versions = ">=3.8.1,<4.0.0"
+files = [
+    {file = "pylint_per_file_ignores-1.2.1-py3-none-any.whl", hash = "sha256:09a33dd5a6870286dc0575ed047f2ec59fe19a67df054d68694395eb97266e07"},
+    {file = "pylint_per_file_ignores-1.2.1.tar.gz", hash = "sha256:c2875b982c3edce3637372efdc4889867966c515313627bea32b8558b876b4da"},
+]
+
+[[package]]
 name = "pytest"
 version = "7.3.2"
 description = "pytest: simple powerful testing with Python"
@@ -555,4 +566,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11.*"
-content-hash = "7e328674c3eeed860fcedd9d11399f8287da9abaa195987e1a63ca1cb7e09402"
+content-hash = "095defa24779b0b63225b4004547f555d14da756abe15b3cdd088fe9680d9e73"

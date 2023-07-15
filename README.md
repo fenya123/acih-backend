@@ -45,7 +45,7 @@ mypy
 
 2. Ruff.
 ```bash
-ruff check src
+ruff check src tests
 ```
 
 3. Flake8.
@@ -55,7 +55,7 @@ flake8
 
 4. Pylint.
 ```bash
-pylint src
+pylint src tests 
 ```
 
 
