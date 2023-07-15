@@ -1,0 +1,11 @@
+name: acih-ci-test
+
+services:
+  app-build: &app-build
+    build:
+      context: ../../..  # path from the current file to the project root dir
+      dockerfile: envs/ci/test/Dockerfile  # path from the project root dir to the Dockerfile
+
+  pytest:
+    <<: *app-build
+    entrypoint: pytest --cov=src
