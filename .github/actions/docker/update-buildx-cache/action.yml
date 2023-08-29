@@ -1,0 +1,12 @@
+name: Update buildx cache
+description: Updates buildx cache correctly to prevent GitHub cache grow forever
+
+runs:
+  using: composite
+  steps:
+    - name: Update buildx cache
+      shell: bash
+      run: |
+        set -o allexport; source ${ENV_FILE}; set +o allexport;  # export environment variables from dotenv file
+        rm -rf ${BUILDX_CACHE_SRC}
+        mv ${BUILDX_CACHE_DEST} ${BUILDX_CACHE_SRC}

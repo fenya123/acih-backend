@@ -10,11 +10,19 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Cache Docker layers
+        uses: ./.github/actions/docker/use-buildx-cache
+
       - name: Build mypy
         run: docker compose --file envs/ci/lint/docker-compose.yml build mypy
 
       - name: Run mypy
         run: docker compose --file envs/ci/lint/docker-compose.yml run mypy
+      
+      - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
+        uses: ./.github/actions/docker/update-buildx-cache
 
   ruff:
     name: Ruff
@@ -22,12 +30,20 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+      
+      - name: Cache Docker layers
+        uses: ./.github/actions/docker/use-buildx-cache
 
       - name: Build ruff
         run: docker compose --file envs/ci/lint/docker-compose.yml build ruff
 
       - name: Run ruff
         run: docker compose --file envs/ci/lint/docker-compose.yml run ruff
+      
+      - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
+        uses: ./.github/actions/docker/update-buildx-cache
 
   flake8:
     name: Flake8
@@ -35,12 +51,20 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+      
+      - name: Cache Docker layers
+        uses: ./.github/actions/docker/use-buildx-cache
 
       - name: Build flake8
         run: docker compose --file envs/ci/lint/docker-compose.yml build flake8
 
       - name: Run flake8
         run: docker compose --file envs/ci/lint/docker-compose.yml run flake8
+      
+      - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
+        uses: ./.github/actions/docker/update-buildx-cache
 
   pylint:
     name: Pylint
@@ -48,12 +72,20 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+      
+      - name: Cache Docker layers
+        uses: ./.github/actions/docker/use-buildx-cache
 
       - name: Build pylint
         run: docker compose --file envs/ci/lint/docker-compose.yml build pylint
 
       - name: Run pylint
         run: docker compose --file envs/ci/lint/docker-compose.yml run pylint
+      
+      - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
+        uses: ./.github/actions/docker/update-buildx-cache
 
   poetry-lock-check:
     name: Poetry lock check
@@ -61,9 +93,17 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
+      
+      - name: Cache Docker layers
+        uses: ./.github/actions/docker/use-buildx-cache
 
       - name: Build Poetry lock check
         run: docker compose --file envs/ci/lint/docker-compose.yml build poetry-lock-check
 
       - name: Run poetry-lock-check
         run: docker compose --file envs/ci/lint/docker-compose.yml run poetry-lock-check
+      
+      - name: Update buildx cache
+        env:
+          ENV_FILE: envs/ci/lint/.env
+        uses: ./.github/actions/docker/update-buildx-cache
