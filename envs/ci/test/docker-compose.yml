@@ -12,4 +12,6 @@ services:
 
   pytest:
     <<: *app-build
+    volumes:
+      - ~/.pytest_cache:/app/.pytest_cache
     entrypoint: pytest --cov=src

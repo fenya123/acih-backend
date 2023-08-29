@@ -12,10 +12,14 @@ services:
 
   mypy:
     <<: *app-build
+    volumes:
+      - ~/.mypy_cache:/app/.mypy_cache
     entrypoint: mypy
 
   ruff:
     <<: *app-build
+    volumes:
+    - ~/.ruff_cache:/app/.ruff_cache
     entrypoint: ruff check src tests
 
   flake8:
@@ -24,7 +28,7 @@ services:
 
   pylint:
     <<: *app-build
-    entrypoint: pylint src tests
+    entrypoint: pylint src tests --jobs=0
 
   poetry-lock-check:
     <<: *app-build
