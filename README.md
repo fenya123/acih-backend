@@ -23,13 +23,35 @@ git config user.email "john.doe@mail.com"
 
 2. Create virtual environment and install dependencies.
 ```bash
-poetry install --with lint,test
+poetry install --with app,lint,test
 ```
 
 3. Activate virual environment.
 ```bash
 poetry shell
 ```
+
+
+## Run app
+
+1. Run uvicorn.
+
+```bash
+uvicorn src.app:app --reload
+```
+
+2. Check app works
+```bash
+# should return "Hello World" message
+curl --request GET http://localhost:8000/
+
+# link for swagger docs
+http://localhost:8000/docs
+
+# link for redoc docs
+http://localhost:8000/redoc
+```
+
 
 
 ## Run linters
@@ -55,7 +77,7 @@ flake8
 
 4. Pylint.
 ```bash
-pylint src tests 
+pylint src tests
 ```
 
 
