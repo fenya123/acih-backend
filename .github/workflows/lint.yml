@@ -11,6 +11,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache Docker layers
+        env:
+          CACHE_KEY_PREFIX: 'envs-ci-lint'  # prefix should match directory which contains Dockerfile used for build
         uses: ./.github/actions/docker/use-buildx-cache
 
       - name: Cache mypy
@@ -41,6 +43,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache Docker layers
+        env:
+          CACHE_KEY_PREFIX: 'envs-ci-lint'  # prefix should match directory which contains Dockerfile used for build
         uses: ./.github/actions/docker/use-buildx-cache
 
       - name: Cache ruff
@@ -71,6 +75,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache Docker layers
+        env:
+          CACHE_KEY_PREFIX: 'envs-ci-lint'  # prefix should match directory which contains Dockerfile used for build
         uses: ./.github/actions/docker/use-buildx-cache
 
       - name: Build flake8
@@ -92,6 +98,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache Docker layers
+        env:
+          CACHE_KEY_PREFIX: 'envs-ci-lint'  # prefix should match directory which contains Dockerfile used for build
         uses: ./.github/actions/docker/use-buildx-cache
 
       - name: Build pylint
@@ -113,6 +121,8 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache Docker layers
+        env:
+          CACHE_KEY_PREFIX: 'envs-ci-lint'  # prefix should match directory which contains Dockerfile used for build
         uses: ./.github/actions/docker/use-buildx-cache
 
       - name: Build Poetry lock check
