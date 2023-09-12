@@ -15,6 +15,16 @@ src = ["src"]
 
 [per-file-ignores]
 
+# ignore checks that are raised only when using FastAPI routes
+"src/**/routes.py" = [
+    "TCH",  # Move import into a type-checking block
+]
+
+# ignore checks that are raised only when using Pydantic models
+"src/**/schemas.py" = [
+    "TCH",  # Move import into a type-checking block
+]
+
 # files with fixtures
 "tests/**/conftest.py" = [
     "ARG001",  # Unused function argument: {name}
@@ -43,10 +53,23 @@ src = ["src"]
 allow-star-arg-any = true
 
 
+[flake8-bugbear]
+# Allow default arguments like, e.g., `data: List[str] = fastapi.Query(None)`.
+extend-immutable-calls = ["fastapi.Depends"]
+
+
 [flake8-type-checking]
 
 # Exempt certain modules from needing to be moved into type-checking blocks.
 exempt-modules = []
+
+# Exempt classes that list any of the enumerated classes
+# as a base class from needing to be moved into type-checking blocks.
+runtime-evaluated-base-classes = [
+    # classes inherited from classes listed below
+    # can contain type definitions which are used at runtime
+    "pydantic.BaseSettings",
+]
 
 # Enforce TC001, TC002, and TC003 rules even when valid runtime imports are present for the same module.
 strict = true
@@ -66,3 +89,9 @@ order-by-type = false
 
 # Add the specified import line to all files.
 required-imports = ["from __future__ import annotations"]
+
+
+[pep8-naming]
+
+# Indicate that the method should be treated as a class method (in addition to the builtin @classmethod).
+classmethod-decorators = ["pydantic.root_validator", "pydantic.validator"]
