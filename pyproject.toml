@@ -21,6 +21,8 @@ optional = true
 
 [tool.poetry.group.app.dependencies]
 fastapi = {version = "0.95.0", extras = ["all"]}
+psycopg2-binary = "2.9.7"
+sqlalchemy = "2.0.20"
 
 
 [tool.poetry.group.lint]
