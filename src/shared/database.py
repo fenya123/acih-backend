@@ -8,8 +8,8 @@ from sqlalchemy.orm import DeclarativeBase, scoped_session, sessionmaker
 
 connection_uri = URL.create(
     "postgresql",
-    username="postgresu",
-    password="postgresp",  # noqa: S106
+    username="pu",
+    password="pp",  # noqa: S106
     host="localhost",
     port=5432,
     database="postgres",
