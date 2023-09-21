@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import os
 from typing import Annotated, TYPE_CHECKING
 
 from fastapi import Depends
-from sqlalchemy import create_engine, URL
+from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, scoped_session, Session, sessionmaker
 
 
@@ -13,14 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-connection_uri = URL.create(
-    "postgresql",
-    username="pu",
-    password="pp",  # noqa: S106
-    host="localhost",
-    port=5432,
-    database="postgres",
-)
+connection_uri = os.environ.get("POSTGRES_CONNECTION_URI", "postgresql://pu:pp@localhost:5433/postgres")
 
 # will allow us to connect to PostgreSQL database
 engine = create_engine(connection_uri)
@@ -37,7 +31,7 @@ class Base(DeclarativeBase):  # pylint: disable=too-few-public-methods
 
 # will allow us to create a separate database connection for each request
 # and close it when the request is finished
-def get_db() -> Iterator[scoped_session[Session]]:
+def get_db() -> Iterator[scoped_session[Session]]:  # pragma: no cover
     """Create session for a request then close it when request is done."""
     try:
         yield session
