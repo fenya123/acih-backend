@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 from src.app import app
+from src.config import config
 from src.entity.models import Entity
 from src.shared.database import get_db
 
@@ -15,7 +16,7 @@ from src.shared.database import get_db
 @pytest.fixture
 def db_empty():
     """Create clean database with built-in cleanup."""
-    engine = create_engine("postgresql://pu:pp@localhost:5433/postgres")
+    engine = create_engine(config.POSTGRES_CONNECTION_URI)
     connection = engine.connect()
     transaction = connection.begin()
     session = scoped_session(sessionmaker(bind=connection))

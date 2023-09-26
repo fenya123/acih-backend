@@ -2,22 +2,21 @@
 
 from __future__ import annotations
 
-import os
 from typing import Annotated, TYPE_CHECKING
 
 from fastapi import Depends
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, scoped_session, Session, sessionmaker
 
+from src.config import config
+
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-connection_uri = os.environ.get("POSTGRES_CONNECTION_URI", "postgresql://pu:pp@localhost:5433/postgres")
-
 # will allow us to connect to PostgreSQL database
-engine = create_engine(connection_uri)
+engine = create_engine(config.POSTGRES_CONNECTION_URI)
 
 # will allow us to send SQL queries to database associated with engine
 session = scoped_session(sessionmaker(bind=engine))
