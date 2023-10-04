@@ -24,12 +24,13 @@ jobs:
             pytest-${{ runner.os }}-${{ github.ref_name }}
             pytest-${{ runner.os }}-${{ github.event.repository.default_branch }}
 
-      - name: Build Pytest
-        run: docker compose --file envs/ci/test/docker-compose.yml build pytest
+      - name: Build Pytest & services
+        run: docker compose --file envs/ci/test/docker-compose.yml build
 
-      - name: Run Pytest
-        run: docker compose --file envs/ci/test/docker-compose.yml run pytest
-        
+      - name: Run Pytest & services
+        run: |
+          docker compose --file envs/ci/test/docker-compose.yml up --quiet-pull --attach=pytest --exit-code-from=pytest
+
       - name: Update buildx cache
         env:
           ENV_FILE: envs/ci/test/.env

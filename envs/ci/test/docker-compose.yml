@@ -10,8 +10,21 @@ services:
       cache_to:
         - type=local,dest=${BUILDX_CACHE_DEST}
 
+  postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+
   pytest:
     <<: *app-build
     volumes:
       - ~/.pytest_cache:/app/.pytest_cache
-    entrypoint: pytest --cov=src
+    depends_on:
+      - postgres
+    environment:
+      - ACIH_ENV=ci/test
+    entrypoint: |
+      bash -c "
+        alembic upgrade head
+        pytest --cov=src
+      "
