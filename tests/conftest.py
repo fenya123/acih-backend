@@ -11,6 +11,7 @@ from src.app import app
 from src.config import config
 from src.entity.models import Entity
 from src.shared.database import get_db
+from tests.utils.database import set_autoincrement_counters
 
 
 @pytest.fixture
@@ -20,6 +21,7 @@ def db_empty():
     connection = engine.connect()
     transaction = connection.begin()
     session = scoped_session(sessionmaker(bind=connection))
+    set_autoincrement_counters(session)
     yield session
     transaction.rollback()
     connection.close()
