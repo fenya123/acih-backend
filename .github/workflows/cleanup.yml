@@ -53,6 +53,7 @@ jobs:
 
   previous-runs:
     name: Previous runs
+    needs: [on-delete, on-push]
     # we don't want to remove failed runs to make their troubleshooting possible
     if: ${{ needs.on-delete.result != 'failure' && needs.on-push.result != 'failure' }}
     runs-on: ubuntu-22.04
