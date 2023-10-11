@@ -22,6 +22,7 @@ optional = true
 [tool.poetry.group.app.dependencies]
 alembic = {extras = ["tz"], version = "1.12.0"}
 fastapi = {version = "0.95.0", extras = ["all"]}
+minio = "7.1.17"
 psycopg2-binary = "2.9.7"
 sqlalchemy = "2.0.20"
 

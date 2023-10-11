@@ -5,6 +5,9 @@
 config
 
 # package
+minio
+
+# package
 Pydantic
 
 # plural for "schema"

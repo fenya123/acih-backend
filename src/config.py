@@ -16,6 +16,11 @@ if TYPE_CHECKING:
 class Config(BaseSettings):
     """Application's configuration class."""
 
+    MINIO_ACCESS_KEY: str
+    MINIO_HOST: str
+    MINIO_PORT: str
+    MINIO_SECRET_KEY: str
+
     POSTGRES_DB: str
     POSTGRES_HOST: str
     POSTGRES_PASSWORD: str
