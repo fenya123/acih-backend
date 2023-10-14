@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import tempfile
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -11,6 +14,7 @@ from src.app import app
 from src.config import config
 from src.entity.models import Entity
 from src.shared.database import get_db
+from src.shared.storage import Minio
 from tests.utils.database import set_autoincrement_counters
 
 
@@ -44,3 +48,40 @@ def db_with_one_entity(db_empty):
     session.add(new_entity)
     session.commit()
     return session
+
+
+@pytest.fixture
+def storage_empty():
+    """Return Minio client and clean the storage before testing."""
+    minio_client = Minio(
+        f"{config.MINIO_HOST}:{config.MINIO_PORT}",
+        access_key=config.MINIO_ACCESS_KEY,
+        secret_key=config.MINIO_SECRET_KEY,
+        secure=False,
+    )
+    buckets = minio_client.list_buckets()
+
+    for bucket in buckets:
+        objects = minio_client.list_objects(bucket.name, recursive=True)
+        for obj in objects:
+            minio_client.remove_object(bucket.name, obj.object_name)
+
+    return minio_client
+
+
+@pytest.fixture
+def storage_with_one_bucket_one_object(storage_empty):
+    """Storage with one bucket with one object."""
+    with tempfile.TemporaryDirectory() as tmp_dir:
+
+        filepath = Path(tmp_dir) / "testobject.txt"
+        with filepath.open("wb") as f:
+            f.write(b"Hello Minio!")
+
+        storage_empty.fput_object(
+            bucket_name=storage_empty.BUCKETS[0],
+            object_name="testobject",
+            file_path=Path(f.name),
+        )
+
+    return storage_empty

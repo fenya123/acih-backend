@@ -10,6 +10,12 @@ services:
       cache_to:
         - type=local,dest=${BUILDX_CACHE_DEST}
 
+  minio:
+    image: minio/minio
+    env_file:
+      - .env
+    command: ["server", "/data"]
+
   postgres:
     image: postgres:latest
     env_file:
@@ -21,6 +27,7 @@ services:
       - ~/.pytest_cache:/app/.pytest_cache
     depends_on:
       - postgres
+      - minio
     environment:
       - ACIH_ENV=ci/test
     entrypoint: |

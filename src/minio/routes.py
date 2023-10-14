@@ -22,7 +22,7 @@ def add_object(
     """Add object to Minio bucket."""
     with tempfile.TemporaryDirectory() as tmp_dir:
 
-        filepath: Path = Path(tmp_dir) / "foo.txt"  # pylint: disable = duplicate-code
+        filepath = Path(tmp_dir) / "foo.txt"  # pylint: disable = duplicate-code
         with filepath.open("wb") as f:
             f.write(b"Hello Minio!")
 
