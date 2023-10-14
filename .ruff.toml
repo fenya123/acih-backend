@@ -10,9 +10,6 @@ select = [
     "ALL",  # enable all rules by default
 ]
 
-# Allow imports relative to these directories.
-src = ["src"]
-
 
 [per-file-ignores]
 
