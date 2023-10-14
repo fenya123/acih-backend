@@ -33,6 +33,7 @@ class Minio(minio.Minio):  # type: ignore[misc]
 
 
 if __name__ == "__main__":
+    # pylint: disable=duplicate-code
     import tempfile
     from pathlib import Path
 
@@ -53,3 +54,4 @@ if __name__ == "__main__":
         objects = list(client.list_objects("testbucket"))
         print(f"Object with key '{objects[0].object_name}' and size '{objects[0].size}' is created.")  # noqa: T201
         print(f"Total objects in 'testbucket': {len(objects)}")  # noqa: T201
+    # pylint: enable=duplicate-code

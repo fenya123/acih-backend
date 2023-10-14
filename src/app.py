@@ -5,11 +5,13 @@ from __future__ import annotations
 from fastapi import FastAPI
 
 from src.entity.routes import router as entity_router
+from src.minio.routes import router as minio_router
 
 
 app = FastAPI()
 
 app.include_router(entity_router)
+app.include_router(minio_router)
 
 
 @app.get("/")
