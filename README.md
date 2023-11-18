@@ -34,26 +34,33 @@ poetry shell
 
 ## Run app
 
-1. Start database for local development.
+1. Generate .env file from example
+
+   _(it should work out of the box but you can adjust it in the way want)_
+```bash
+cp envs/local/dev/example.env envs/local/dev/.env
+```
+
+2. Start database for local development.
 ```bash
 docker compose -f envs/local/dev/docker-compose.yml up -d
 ```
 
-2. Apply migrations.
+3. Apply migrations.
 ```bash
 # to pass environment variable in Windows PowerShell run:
 # $env:ACIH_ENV = 'local/test';
 ACIH_ENV=local/dev alembic upgrade head
 ```
 
-3. Run uvicorn.
+4. Run uvicorn.
 ```bash
 # to pass environment variable in Windows PowerShell run:
 # $env:ACIH_ENV = 'local/test';
 ACIH_ENV=local/dev uvicorn src.app:app --reload
 ```
 
-4. Check app works
+5. Check app works
 ```bash
 # should return "Hello World" message
 curl --request GET http://localhost:8000/
@@ -98,12 +105,19 @@ pylint src tests
 
 To run tests you need to do all steps from [First time setup](#first-time-setup) section.
 
-1. Start database for local testing
+1. Generate .env file from example
+
+   _(it should work out of the box but you can adjust it in the way want)_
+```bash
+cp envs/local/dev/example.env envs/local/dev/.env
+```
+
+2. Start database for local testing
 ```bash
 docker compose -f envs/local/test/docker-compose.yml up -d
 ```
 
-2. Apply migrations
+3. Apply migrations
 ```bash
 # to pass environment variable in Windows PowerShell run:
 # $env:ACIH_ENV = 'local/test';
