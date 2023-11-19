@@ -1,0 +1,36 @@
+name: acih-qa-deploy
+
+services:
+  minio:
+    image: minio/minio
+    env_file:
+      - .env
+    command: ["server", "/data"]
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - .env
+
+  app:
+    build:
+      context: ../../..  # path from the current file to the project root dir
+      dockerfile: envs/qa/deploy/Dockerfile  # path from the project root dir to the Dockerfile
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+      - minio
+    environment:
+      - ACIH_ENV=qa/deploy
+    volumes:
+      - .env:/app/envs/qa/deploy/.env
+    entrypoint: |
+      bash -c "
+        alembic upgrade head
+        uvicorn src.app:app --host 0.0.0.0 --port 8000
+      "
+
+volumes:
+  postgres:
+  minio:
