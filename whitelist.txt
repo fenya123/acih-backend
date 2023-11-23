@@ -1,8 +1,14 @@
 # This is a whitelist of allowed words for flake8-spellcheck plugin.
 # IMPORTANT: please keep this list alphabetically sorted by whitelisted words
 
+# authorization / authentication
+auth
+
 # configuration component
 config
+
+# FastAPI python framework
+fastapi
 
 # package
 minio
