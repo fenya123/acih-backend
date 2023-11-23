@@ -1,7 +1,11 @@
 name: Cleanup
 run-name: Cleanup for branch "${{ github.ref_name }}"
 
-on: [delete, push]
+on:
+  delete:
+  push:
+    branches:
+      - "*"
 jobs:
   on-delete:
     name: On delete

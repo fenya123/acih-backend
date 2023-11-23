@@ -1,0 +1,25 @@
+name: Deploy
+run-name: Deploy commit "${{ github.sha }}"
+
+on:
+  push:
+    tags:
+      - "DEPLOYED/QA"
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using key
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        script: |
+          cd ~/acih-backend
+          docker compose -f envs/qa/deploy/docker-compose.yml down
+          git fetch origin +refs/tags/DEPLOYED/QA:refs/tags/DEPLOYED/QA
+          git checkout tags/DEPLOYED/QA
+          docker compose -f envs/qa/deploy/docker-compose.yml up -d

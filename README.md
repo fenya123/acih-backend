@@ -133,3 +133,19 @@ pytest --cov
 ```bash
 coverage html
 ```
+
+
+## Deploy
+
+CD is implemented with GitHub Actions.
+
+In order to determine which version is currently deployed:
+```bash
+git fetch origin +refs/tags/DEPLOYED/QA:refs/tags/DEPLOYED/QA
+```
+
+In order to trigger deployment:
+```bash
+git tag --annotate --force DEPLOYED/QA --message ''
+git push origin DEPLOYED/QA --force
+```
