@@ -109,7 +109,7 @@ To run tests you need to do all steps from [First time setup](#first-time-setup)
 
    _(it should work out of the box but you can adjust it in the way want)_
 ```bash
-cp envs/local/dev/example.env envs/local/dev/.env
+cp envs/local/test/example.env envs/local/test/.env
 ```
 
 2. Start database for local testing
