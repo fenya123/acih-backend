@@ -5,12 +5,16 @@ services:
     image: minio/minio
     env_file:
       - .env
+    volumes:
+      - minio:/data
     command: ["server", "/data"]
 
   postgres:
     image: postgres:latest
     env_file:
       - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
 
   app:
     build:
