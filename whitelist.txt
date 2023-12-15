@@ -10,6 +10,12 @@ config
 # FastAPI python framework
 fastapi
 
+# a person/entity that is being followed
+followee
+
+# plural for followee
+followees
+
 # package
 minio
 
