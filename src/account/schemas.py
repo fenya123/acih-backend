@@ -23,6 +23,12 @@ class Account(BaseModel):
     email: str
 
 
+class Accounts(BaseModel):
+    """Accounts (plural) schema."""
+
+    accounts: list[Account]
+
+
 class AccountWithProfile(BaseModel):
     """Schema for Account and Profile."""
 
