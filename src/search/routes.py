@@ -26,5 +26,7 @@ router = APIRouter(tags=["search"])
 def search_accounts(
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
     profile_username: Annotated[str, Query()],  # noqa: ARG001
+    limit: Annotated[int, Query()],  # noqa: ARG001
+    offset: Annotated[int, Query()],  # noqa: ARG001
 ) -> None:
     """Get accounts search result endpoint."""

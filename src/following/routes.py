@@ -60,6 +60,8 @@ def get_following_counts(
 def get_followers(
     account_id: Annotated[int, Path()],  # noqa: ARG001
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    limit: Annotated[int, Query()],  # noqa: ARG001
+    offset: Annotated[int, Query()],  # noqa: ARG001
 ) -> None:
     """Get a list of an account's followers."""
 
@@ -77,6 +79,8 @@ def get_followers(
 def get_followees(
     account_id: Annotated[int, Path()],  # noqa: ARG001
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    limit: Annotated[int, Query()],  # noqa: ARG001
+    offset: Annotated[int, Query()],  # noqa: ARG001
 ) -> None:
     """Get a list of an account's followees."""
 

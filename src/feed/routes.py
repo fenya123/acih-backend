@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, status
+from fastapi import APIRouter, Depends, Path, Query, status
 from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.dependencies import get_token
@@ -27,6 +27,8 @@ router = APIRouter(tags=["feed"])
 def get_followed_posts_feed(
     account_id: Annotated[int, Path()],  # noqa: ARG001
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    limit: Annotated[int, Query()],  # noqa: ARG001
+    offset: Annotated[int, Query()],  # noqa: ARG001
 ) -> None:
     """Get followed posts for an account."""
 
@@ -44,5 +46,7 @@ def get_followed_posts_feed(
 def get_suggested_posts_feed(
     account_id: Annotated[int, Path()],  # noqa: ARG001
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    limit: Annotated[int, Query()],  # noqa: ARG001
+    offset: Annotated[int, Query()],  # noqa: ARG001
 ) -> None:
     """Get suggested posts for an account."""
