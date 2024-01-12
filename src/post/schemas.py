@@ -28,7 +28,6 @@ class PostContent(BaseModel):
 
     description: str | None
     file_id: str
-    preview_id: str
     title: str | None
 
 
