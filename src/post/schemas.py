@@ -11,10 +11,10 @@ class Post(BaseModel):
     id: int  # noqa: A003
 
     account_id: int
-    description: str | None
+    description: str | None = None
     file_id: str
     preview_id: str
-    title: str | None
+    title: str | None = None
 
 
 class Posts(BaseModel):
@@ -26,9 +26,9 @@ class Posts(BaseModel):
 class PostContent(BaseModel):
     """Post content schema."""
 
-    description: str | None
+    description: str | None = None
     file_id: str
-    title: str | None
+    title: str | None = None
 
 
 class PostsCount(BaseModel):

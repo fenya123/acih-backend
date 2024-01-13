@@ -10,10 +10,10 @@ class Profile(BaseModel):
 
     account_id: int
 
-    avatar_id: str | None
-    background_id: str | None
-    description: str | None
-    info: str | None
+    avatar_id: str | None = None
+    background_id: str | None = None
+    description: str | None = None
+    info: str | None = None
     username: str
 
 
@@ -26,8 +26,8 @@ class Profiles(BaseModel):
 class ProfileData(BaseModel):
     """Profile data schema."""
 
-    avatar_id: str | None
-    background_id: str | None
-    description: str | None
-    info: str | None
+    avatar_id: str | None = None
+    background_id: str | None = None
+    description: str | None = None
+    info: str | None = None
     username: str

@@ -49,14 +49,14 @@ docker compose -f envs/local/dev/docker-compose.yml up -d
 3. Apply migrations.
 ```bash
 # to pass environment variable in Windows PowerShell run:
-# $env:ACIH_ENV = 'local/test';
+# $env:ACIH_ENV = 'local/dev';
 ACIH_ENV=local/dev alembic upgrade head
 ```
 
 4. Run uvicorn.
 ```bash
 # to pass environment variable in Windows PowerShell run:
-# $env:ACIH_ENV = 'local/test';
+# $env:ACIH_ENV = 'local/dev';
 ACIH_ENV=local/dev uvicorn src.app:app --reload
 ```
 

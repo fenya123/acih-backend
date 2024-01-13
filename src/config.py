@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.shared.environment import get_env_file
 
@@ -34,11 +34,7 @@ class Config(BaseSettings):
             f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         )
 
-    class Config:
-        """Pydantic special class for model configuration."""
-
-        allow_mutation = False  # app config must be immutable
-        env_file = get_env_file()
+    model_config = SettingsConfigDict(env_file=get_env_file(), extra="allow", frozen=True)
 
 
 config = Config()

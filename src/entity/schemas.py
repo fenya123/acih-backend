@@ -2,18 +2,14 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class EntitySchema(BaseModel):
     """Pydantic schema for Entity model."""
 
     id: int  # noqa: A003
-
-    class Config:
-        """Configuration for Pydantic schema."""
-
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class EntitiesSchema(BaseModel):
