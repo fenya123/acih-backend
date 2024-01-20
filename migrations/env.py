@@ -26,7 +26,9 @@ target_metadata = Base.metadata
 
 
 # import model here in order to let alembic know about our models before it starts to generate migrations
+from src.account.models import Account, PasswordHash
 from src.entity.models import Entity
+from src.profile.models import Profile
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

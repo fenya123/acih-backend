@@ -32,8 +32,11 @@ class Base(DeclarativeBase):  # pylint: disable=too-few-public-methods
 # and close it when the request is finished
 def get_db() -> Iterator[scoped_session[Session]]:  # pragma: no cover
     """Create session for a request then close it when request is done."""
-    try:
+    try:  # pylint: disable=too-many-try-statements
         yield session
+        session.commit()
+    except Exception:  # noqa: BLE001
+        session.rollback()
     finally:
         session.close()
 

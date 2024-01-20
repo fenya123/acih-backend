@@ -19,6 +19,9 @@ followees
 # package
 minio
 
+# object relational mapping
+ORM
+
 # package
 Pydantic
 
