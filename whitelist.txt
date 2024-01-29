@@ -7,6 +7,12 @@ auth
 # configuration component
 config
 
+# datetime (standard library module)
+datetime
+
+# enumeration
+enum
+
 # FastAPI python framework
 fastapi
 

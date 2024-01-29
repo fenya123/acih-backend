@@ -10,7 +10,6 @@ from src.entity.routes import router as entity_router
 from src.feed.routes import router as feed_router
 from src.files.routes import router as files_router
 from src.following.routes import router as follower_router
-from src.minio.routes import router as minio_router
 from src.post.routes import router as post_router
 from src.profile.routes import router as profile_router
 from src.search.routes import router as search_router
@@ -24,7 +23,6 @@ app.include_router(entity_router)
 app.include_router(feed_router)
 app.include_router(files_router)
 app.include_router(follower_router)
-app.include_router(minio_router)
 app.include_router(post_router)
 app.include_router(profile_router)
 app.include_router(search_router)

@@ -10,6 +10,8 @@
 extension-pkg-whitelist=pydantic
 
 disable =
+    consider-using-assignment-expr,  # it may lead to unreadable code
+
     # options below are disabled because they are already implemented in ruff
     # if you want to disable another error for some reason, please do it in a separate section above
     anomalous-backslash-in-string,

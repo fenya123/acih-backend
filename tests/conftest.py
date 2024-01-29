@@ -2,9 +2,6 @@
 
 from __future__ import annotations
 
-import tempfile
-from pathlib import Path
-
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -67,21 +64,3 @@ def storage_empty():
             minio_client.remove_object(bucket.name, obj.object_name)
 
     return minio_client
-
-
-@pytest.fixture
-def storage_with_one_bucket_one_object(storage_empty):
-    """Storage with one bucket with one object."""
-    with tempfile.TemporaryDirectory() as tmp_dir:
-
-        filepath = Path(tmp_dir) / "testobject.txt"
-        with filepath.open("wb") as f:
-            f.write(b"Hello Minio!")
-
-        storage_empty.fput_object(
-            bucket_name=storage_empty.BUCKETS[0],
-            object_name="testobject",
-            file_path=Path(f.name),
-        )
-
-    return storage_empty

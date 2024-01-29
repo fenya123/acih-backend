@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from enum import Enum
+from src.shared.enums import Enum
 
 
 class MimeType(Enum):

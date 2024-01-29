@@ -4,12 +4,15 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Path, status, UploadFile
+from fastapi import APIRouter, Depends, Path, status
 from fastapi.responses import FileResponse
 from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.dependencies import get_token
-from src.files.schemas import File
+from src.files import controllers
+from src.files.dependencies import get_new_file
+from src.files.schemas import File, FileData
+from src.shared.database import Db
 
 
 router = APIRouter(tags=["files"])
@@ -27,10 +30,12 @@ router = APIRouter(tags=["files"])
     status_code=status.HTTP_201_CREATED,
 )
 def upload_file(
+    db: Db,
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    file: UploadFile,  # noqa: ARG001
-) -> None:
+    file_data: Annotated[FileData, Depends(get_new_file)],
+) -> File:
     """Upload file endpoint."""
+    return controllers.upload_file(db=db, file_data=file_data)
 
 
 @router.get(
@@ -43,6 +48,7 @@ def upload_file(
     response_class=FileResponse,
 )
 def download_file(
+    db: Db,  # noqa: ARG001
     file_id: Annotated[int, Path()],  # noqa: ARG001
 ) -> None:
     """Download file endpoint."""
