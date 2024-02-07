@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -10,6 +12,8 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from src.app import app
 from src.config import config
 from src.entity.models import Entity
+from src.files.enums import Extension, MimeType
+from src.files.models import File
 from src.shared.database import get_db
 from src.shared.storage import Minio
 from tests.utils.database import set_autoincrement_counters
@@ -48,6 +52,21 @@ def db_with_one_entity(db_empty):
 
 
 @pytest.fixture
+def db_with_one_file(db_empty):
+    """Create db with one 'image' file."""
+    session = db_empty
+    file = File(
+        extension=Extension.JPG,
+        filename="testjpg.jpg",
+        mime_type=MimeType.IMAGE_JPEG,
+        size=15,
+    )
+    session.add(file)
+    session.commit()
+    return session
+
+
+@pytest.fixture
 def storage_empty():
     """Return Minio client and clean the storage before testing."""
     minio_client = Minio(
@@ -64,3 +83,16 @@ def storage_empty():
             minio_client.remove_object(bucket.name, obj.object_name)
 
     return minio_client
+
+
+@pytest.fixture
+def storage_with_one_object(storage_empty, tmp_path):
+    """Storage with one bucket with one object."""
+    filepath = Path(tmp_path) / "testobject.txt"
+    filepath.write_bytes(b"Mockbytesobject")
+    storage_empty.fput_object(
+        bucket_name=storage_empty.BUCKETS[0],
+        object_name="10000",
+        file_path=filepath,
+    )
+    return storage_empty

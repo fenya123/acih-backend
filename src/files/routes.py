@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Path, status
-from fastapi.responses import FileResponse
+from fastapi.responses import Response
 from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.dependencies import get_token
@@ -45,10 +45,11 @@ def upload_file(
         status.HTTP_403_FORBIDDEN: {},
         status.HTTP_404_NOT_FOUND: {},
     },
-    response_class=FileResponse,
+    response_class=Response,
 )
 def download_file(
-    db: Db,  # noqa: ARG001
-    file_id: Annotated[int, Path()],  # noqa: ARG001
-) -> None:
+    db: Db,
+    file_id: Annotated[int, Path()],
+) -> Response:
     """Download file endpoint."""
+    return controllers.download_file(db=db, file_id=file_id)

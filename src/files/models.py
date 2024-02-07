@@ -4,16 +4,17 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, Integer, String
+from sqlalchemy import DateTime, Enum, Integer, select, String
 from sqlalchemy.orm import Mapped, mapped_column, Session
 
 from src.files.enums import Extension, MimeType
 from src.files.schemas import FileData
 from src.shared.database import Base
 from src.shared.datetime import utcnow
+from src.shared.exceptions import NotFoundException
 
 
-class File(Base):  # pylint: disable=too-few-public-methods
+class File(Base):
     """ORM model for the 'file' table."""
 
     __tablename__ = "file"
@@ -41,4 +42,15 @@ class File(Base):  # pylint: disable=too-few-public-methods
         )
         db.add(file)
         db.flush()
+        return file
+
+    @classmethod
+    def get_file(cls: type[File], db: Session, file_id: int) -> File:
+        """Get file object by id."""
+        query = select(File).where(File.id == file_id)
+        row = db.execute(query).one_or_none()
+        if row is None:
+            msg = "Requested file not found."
+            raise NotFoundException(msg)
+        file: File = row.File
         return file

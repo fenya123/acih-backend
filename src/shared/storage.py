@@ -46,3 +46,14 @@ class Minio(minio.Minio):  # type: ignore[misc]
     def upload_file(self: Self, file_id: int, file_data: FileData) -> None:
         """Upload file to storage."""
         self.put_object("files", str(file_id), file_data.data, file_data.size)
+
+    def download_file(self: Self, file_id: int) -> bytes:
+        """Return object data as HTTP response."""
+        try:  # pylint: disable=too-many-try-statements
+            response = self.get_object("files", str(file_id))
+            file_data: bytes = response.data
+        finally:
+            response.close()
+            response.release_conn()
+
+        return file_data
