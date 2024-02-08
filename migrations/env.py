@@ -30,6 +30,7 @@ from src.account.models import Account, PasswordHash
 from src.entity.models import Entity
 from src.files.models import File
 from src.profile.models import Profile
+from src.auth.models import Session
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

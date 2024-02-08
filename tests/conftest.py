@@ -2,14 +2,21 @@
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
+from uuid import UUID
 
+import jwt
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+from src.account.enums import Algorithm
+from src.account.models import Account, PasswordHash
 from src.app import app
+from src.auth.models import Session
+from src.auth.schemas import Algorithm as AuthAlgorithm
 from src.config import config
 from src.entity.models import Entity
 from src.files.enums import Extension, MimeType
@@ -39,6 +46,55 @@ def client(db_empty):
         yield db_empty
     app.dependency_overrides[get_db] = override_get_db
     return TestClient(app)
+
+
+@pytest.fixture
+def db_with_one_account(db_empty):
+    """Create database with one account (and password hash)."""
+    session = db_empty
+    test_account = Account(
+        id=1,
+        email="test@gmail.com",
+    )
+    session.add(test_account)
+
+    salt = "e570d2d0-0515-49ee-9f08-68f34026028c"
+    salted_password = "testpassword" + salt
+    hash_object = hashlib.new(Algorithm.SHA256.value)
+    hash_object.update(salted_password.encode("ascii"))
+
+    test_password_hash = PasswordHash(
+        account_id=1,
+        algorithm=Algorithm.SHA256,
+        salt=UUID(salt),
+        value=hash_object.hexdigest(),
+    )
+    session.add(test_password_hash)
+    session.commit()
+    return session
+
+
+@pytest.fixture
+def db_with_one_account_one_session(db_with_one_account):
+    """Create database with one account (and password hash) with a session."""
+    session = db_with_one_account
+    test_session = Session(
+        id=UUID("441d78c0-c031-4fa6-9f2a-78200da5c0fe"),
+        account_id=1,
+    )
+    session.add(test_session)
+    session.commit()
+    return session
+
+
+@pytest.fixture
+def token_for_testing():
+    """JWT token shortcut."""
+    payload = {
+        "account_id": 1,
+        "session_id": "441d78c0-c031-4fa6-9f2a-78200da5c0fe",
+    }
+    return jwt.encode(payload, config.SECRET_KEY, AuthAlgorithm.HS256.value)
 
 
 @pytest.fixture

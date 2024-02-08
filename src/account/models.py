@@ -3,15 +3,19 @@
 from __future__ import annotations
 
 import hashlib
+import typing
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Enum, ForeignKey, Integer, String
+from sqlalchemy import Enum, ForeignKey, Integer, select, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 
 from src.account.enums import Algorithm
+from src.auth.models import Session as SessionModel
+from src.auth.schemas import Credentials
 from src.profile.models import Profile
 from src.shared.database import Base
+from src.shared.exceptions import NotFoundException
 
 
 if TYPE_CHECKING:
@@ -27,6 +31,7 @@ class Account(Base):
 
     email: Mapped[str] = mapped_column(String(200), nullable=False, unique=True)
 
+    password_hash: Mapped["PasswordHash"] = relationship(uselist=False, back_populates="account")  # noqa: UP037
     profile: Mapped["Profile"] = relationship(uselist=False, back_populates="account")  # noqa: UP037
 
     @classmethod
@@ -51,8 +56,24 @@ class Account(Base):
         db.flush()
         return new_account
 
+    @classmethod
+    def get_by_credentials(cls: type[Account], credentials: Credentials, db: Session) -> Account:
+        """Validate credentials and get an object."""
+        query = select(Account).where(Account.email == credentials.email)
+        row = db.execute(query).one_or_none()
 
-class PasswordHash(Base):  # pylint: disable=too-few-public-methods
+        if row is None or not row.Account.password_hash.check(credentials.password):
+            msg = "Account with provided credentials does not exist."
+            raise NotFoundException(msg)
+
+        return typing.cast(Account, row.Account)
+
+    def create_session(self: Self, db: Session) -> SessionModel:
+        """Create Session object."""
+        return SessionModel.new_object(db, self.id)
+
+
+class PasswordHash(Base):
     """ORM model for the 'password_hash' table."""
 
     __tablename__ = "password_hash"
@@ -63,6 +84,8 @@ class PasswordHash(Base):  # pylint: disable=too-few-public-methods
     salt: Mapped[str] = mapped_column(String(36), nullable=False)
     value: Mapped[str] = mapped_column(String(128), nullable=False)
 
+    account: Mapped["Account"] = relationship(back_populates="password_hash")  # noqa: UP037
+
     @classmethod
     def new_object(cls: type[PasswordHash], db: Session, password: str, account_id: int) -> PasswordHash:
         """Create new PasswordHash object."""
@@ -72,11 +95,18 @@ class PasswordHash(Base):  # pylint: disable=too-few-public-methods
         db.flush()
         return new_password_hash
 
-    def _hash_password(self: Self, password: str) -> None:
-        self.salt = str(uuid.uuid4())
-        self.algorithm = Algorithm.SHA256
-
+    def _generate_hash(self: Self, password: str) -> str:
         salted_input = password + self.salt
         hash_object = hashlib.new(self.algorithm.value)
         hash_object.update(salted_input.encode("ascii"))
-        self.value = hash_object.hexdigest()
+        return hash_object.hexdigest()
+
+    def _hash_password(self: Self, password: str) -> None:
+        self.salt = str(uuid.uuid4())
+        self.algorithm = Algorithm.SHA256
+        self.value = self._generate_hash(password)
+
+    def check(self: Self, password: str) -> bool:
+        """Check whether or not provided value's hash is password hash."""
+        password_hash = self._generate_hash(password)
+        return password_hash == self.value

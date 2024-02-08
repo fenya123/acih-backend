@@ -22,6 +22,9 @@ followee
 # plural for followee
 followees
 
+# JWT
+JWT
+
 # package
 minio
 

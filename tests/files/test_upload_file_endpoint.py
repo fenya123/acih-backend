@@ -10,10 +10,10 @@ from src.files.enums import Extension, MimeType
 from src.files.models import File
 
 
-def test_upload_file_creates_db_entry(client, db_empty):
-    session = db_empty
+def test_upload_file_creates_db_entry(client, db_with_one_account_one_session, token_for_testing):
+    session = db_with_one_account_one_session
     files = {"file": ("testjpeg.jpg", b"some file data in bytes", "image/jpeg")}
-    headers = {"Authorization": "Bearer token-placeholder"}
+    headers = {"Authorization": f"Bearer {token_for_testing}"}
 
     response = client.post("/files", files=files, headers=headers)
 
@@ -28,10 +28,10 @@ def test_upload_file_creates_db_entry(client, db_empty):
     assert isinstance(files[0].upload_ts, datetime)
 
 
-def test_upload_file_returns_201_with_correct_response(client, db_empty):
-    session = db_empty
+def test_upload_file_returns_201_with_correct_response(client, db_with_one_account_one_session, token_for_testing):
+    session = db_with_one_account_one_session
     files = {"file": ("testjpeg.jpg", b"some file data in bytes", "image/jpeg")}
-    headers = {"Authorization": "Bearer token-placeholder"}
+    headers = {"Authorization": f"Bearer {token_for_testing}"}
 
     response = client.post("/files", files=files, headers=headers)
 
@@ -47,10 +47,15 @@ def test_upload_file_returns_201_with_correct_response(client, db_empty):
     }
 
 
-def test_upload_file_adds_correct_object_to_storage(client, storage_empty):
+def test_upload_file_adds_correct_object_to_storage(
+    client,
+    storage_empty,
+    db_with_one_account_one_session,
+    token_for_testing,
+):
     minio = storage_empty
     files = {"file": ("testjpeg.jpg", b"some file data in bytes", "image/jpeg")}
-    headers = {"Authorization": "Bearer token-placeholder"}
+    headers = {"Authorization": f"Bearer {token_for_testing}"}
 
     response = client.post("/files", files=files, headers=headers)
 
@@ -62,9 +67,13 @@ def test_upload_file_adds_correct_object_to_storage(client, storage_empty):
     assert minio.get_object("files", "10000").read() == b"some file data in bytes"
 
 
-def test_upload_file_with_file_without_filename_returns_422_with_correct_response(client):
+def test_upload_file_with_file_without_filename_returns_422_with_correct_response(
+    client,
+    db_with_one_account_one_session,
+    token_for_testing,
+):
     files = {"file": (".png", b"some file data in bytes", "image/jpeg")}
-    headers = {"Authorization": "Bearer token-placeholder"}
+    headers = {"Authorization": f"Bearer {token_for_testing}"}
 
     response = client.post("/files", files=files, headers=headers)
 
@@ -83,9 +92,13 @@ def test_upload_file_with_file_without_filename_returns_422_with_correct_respons
     }
 
 
-def test_upload_file_without_extension_returns_415_with_correct_response(client):
+def test_upload_file_without_extension_returns_415_with_correct_response(
+    client,
+    db_with_one_account_one_session,
+    token_for_testing,
+):
     files = {"file": ("testjpeg", b"some file data in bytes", "image/jpeg")}
-    headers = {"Authorization": "Bearer token-placeholder"}
+    headers = {"Authorization": f"Bearer {token_for_testing}"}
 
     response = client.post("/files", files=files, headers=headers)
 
@@ -93,9 +106,13 @@ def test_upload_file_without_extension_returns_415_with_correct_response(client)
     assert response.json() == {"detail": "File does not contain an extension."}
 
 
-def test_upload_file_without_mime_type_returns_415_with_correct_response(client):
+def test_upload_file_without_mime_type_returns_415_with_correct_response(
+    client,
+    db_with_one_account_one_session,
+    token_for_testing,
+):
     files = {"file": ("testjpeg.jpg", b"some file data in bytes", "")}
-    headers = {"Authorization": "Bearer token-placeholder"}
+    headers = {"Authorization": f"Bearer {token_for_testing}"}
 
     response = client.post("/files", files=files, headers=headers)
 

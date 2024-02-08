@@ -7,8 +7,10 @@ from typing import Annotated
 from fastapi import APIRouter, Body, Depends, Path, status
 from fastapi.security import HTTPAuthorizationCredentials
 
+from src.auth import controllers
 from src.auth.dependencies import get_token
-from src.auth.schemas import Credentials, Session
+from src.auth.schemas import Credentials, SessionWithToken
+from src.shared.database import Db
 
 
 router = APIRouter(tags=["auth"])
@@ -17,13 +19,14 @@ router = APIRouter(tags=["auth"])
 @router.post(
     "/sessions",
     responses={
-        status.HTTP_403_FORBIDDEN: {},
+        status.HTTP_404_NOT_FOUND: {},
     },
-    response_model=Session,
+    response_model=SessionWithToken,
     status_code=status.HTTP_201_CREATED,
 )
-def create_session(credentials: Annotated[Credentials, Body()]) -> None:  # noqa: ARG001
+def create_session(credentials: Annotated[Credentials, Body()], db: Db) -> SessionWithToken:
     """Create session endpoint."""
+    return controllers.create_session(credentials, db)
 
 
 @router.delete(

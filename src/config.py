@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.shared.environment import get_env_file
@@ -16,16 +17,18 @@ if TYPE_CHECKING:
 class Config(BaseSettings):
     """Application's configuration class."""
 
-    MINIO_ACCESS_KEY: str
-    MINIO_HOST: str
-    MINIO_PORT: str
-    MINIO_SECRET_KEY: str
+    MINIO_ACCESS_KEY: str = Field(..., min_length=1)
+    MINIO_HOST: str = Field(..., min_length=1)
+    MINIO_PORT: str = Field(..., min_length=1)
+    MINIO_SECRET_KEY: str = Field(..., min_length=1)
 
-    POSTGRES_DB: str
-    POSTGRES_HOST: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_PORT: str
-    POSTGRES_USER: str
+    POSTGRES_DB: str = Field(..., min_length=1)
+    POSTGRES_HOST: str = Field(..., min_length=1)
+    POSTGRES_PASSWORD: str = Field(..., min_length=1)
+    POSTGRES_PORT: str = Field(..., min_length=1)
+    POSTGRES_USER: str = Field(..., min_length=1)
+
+    SECRET_KEY: str = Field(..., min_length=1)
 
     @property
     def POSTGRES_CONNECTION_URI(self: Self) -> str:  # noqa: D102,N802

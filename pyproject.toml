@@ -25,6 +25,7 @@ fastapi = {version = "0.109.0", extras = ["all"]}
 minio = "7.1.17"
 psycopg2-binary = "2.9.7"
 pydantic = "2.5.3"
+pyjwt = "2.8.0"
 sqlalchemy = "2.0.20"
 
 
@@ -47,6 +48,7 @@ optional = true
 
 
 [tool.poetry.group.test.dependencies]
+dirty-equals = "0.7.1.post0"
 pytest = "7.3.2"
 pytest-cov = "4.1.0"
 pytest-env = "1.0.1"

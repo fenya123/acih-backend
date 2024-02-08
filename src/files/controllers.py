@@ -37,6 +37,6 @@ def download_file(
 ) -> Response:
     """Download file."""
     client = Minio.get_client()
-    file = FileModel.get_file(db, file_id)
+    file = FileModel.get(db, file_id)
     data = client.download_file(file.id)
     return Response(status_code=status.HTTP_200_OK, content=data, media_type=file.mime_type.value)

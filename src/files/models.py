@@ -45,7 +45,7 @@ class File(Base):
         return file
 
     @classmethod
-    def get_file(cls: type[File], db: Session, file_id: int) -> File:
+    def get(cls: type[File], db: Session, file_id: int) -> File:
         """Get file object by id."""
         query = select(File).where(File.id == file_id)
         row = db.execute(query).one_or_none()
