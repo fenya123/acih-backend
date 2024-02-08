@@ -33,6 +33,7 @@ class Account(Base):
 
     password_hash: Mapped["PasswordHash"] = relationship(uselist=False, back_populates="account")  # noqa: UP037
     profile: Mapped["Profile"] = relationship(uselist=False, back_populates="account")  # noqa: UP037
+    sessions: Mapped[list["SessionModel"]] = relationship("Session", back_populates="account")  # noqa: UP037
 
     @classmethod
     def create(
@@ -57,6 +58,16 @@ class Account(Base):
         return new_account
 
     @classmethod
+    def get(cls: type[Account], db: Session, account_id: int) -> Account:
+        """Get Account by id."""
+        query = select(Account).where(Account.id == account_id)
+        row = db.execute(query).one_or_none()
+        if row is None:
+            msg = "Account not found"
+            raise NotFoundException(msg)
+        return typing.cast(Account, row.Account)
+
+    @classmethod
     def get_by_credentials(cls: type[Account], credentials: Credentials, db: Session) -> Account:
         """Validate credentials and get an object."""
         query = select(Account).where(Account.email == credentials.email)
@@ -67,6 +78,13 @@ class Account(Base):
             raise NotFoundException(msg)
 
         return typing.cast(Account, row.Account)
+
+    def has_session(self: Self, session_id: uuid.UUID) -> bool:
+        """Check whether or not Account instance has session with specified id."""
+        for session in self.sessions:  # noqa: SIM110
+            if session.id == session_id:
+                return True
+        return False
 
     def create_session(self: Self, db: Session) -> SessionModel:
         """Create Session object."""

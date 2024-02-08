@@ -88,6 +88,19 @@ def db_with_one_account_one_session(db_with_one_account):
 
 
 @pytest.fixture
+def db_with_one_account_one_other_session(db_with_one_account):
+    """Add a different session to the same account."""
+    session = db_with_one_account
+    test_session = Session(
+        id=UUID("41cd3cfe-6b14-48a1-8117-f8ba3a7a09af"),
+        account_id=1,
+    )
+    session.add(test_session)
+    session.commit()
+    return session
+
+
+@pytest.fixture
 def token_for_testing():
     """JWT token shortcut."""
     payload = {
@@ -95,6 +108,16 @@ def token_for_testing():
         "session_id": "441d78c0-c031-4fa6-9f2a-78200da5c0fe",
     }
     return jwt.encode(payload, config.SECRET_KEY, AuthAlgorithm.HS256.value)
+
+
+@pytest.fixture
+def token_with_false_secret_key():
+    """Invalid signature token."""
+    payload = {
+        "account_id": 1,
+        "session_id": "441d78c0-c031-4fa6-9f2a-78200da5c0fe",
+    }
+    return jwt.encode(payload, "false_secret", AuthAlgorithm.HS256.value)
 
 
 @pytest.fixture

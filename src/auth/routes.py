@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Body, Depends, Path, status
-from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth import controllers
 from src.auth.dependencies import get_token
-from src.auth.schemas import Credentials, SessionWithToken
+from src.auth.schemas import Credentials, SessionWithToken, TokenPayload
 from src.shared.database import Db
 
 
@@ -40,8 +40,10 @@ def create_session(credentials: Annotated[Credentials, Body()], db: Db) -> Sessi
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def remove_session(
-    account_id: Annotated[int, Path()],  # noqa: ARG001
-    session_id: Annotated[int, Path()],  # noqa: ARG001
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
+    account_id: Annotated[int, Path()],
+    session_id: Annotated[UUID, Path()],
+    token: Annotated[TokenPayload, Depends(get_token)],
+    db: Db,
 ) -> None:
     """Remove session endpoint."""
+    return controllers.remove_session(account_id, token, db, session_id)

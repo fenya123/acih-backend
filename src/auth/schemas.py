@@ -40,6 +40,12 @@ class TokenPayload(BaseModel):
     session_id: UUID
     account_id: int
 
+    @classmethod
+    def from_token(cls: type[TokenPayload], token: str) -> TokenPayload:
+        """Decode JWT token into a class instance."""
+        payload_dict = jwt.decode(token, config.SECRET_KEY, algorithms=[Algorithm.HS256.value])
+        return TokenPayload.model_validate(payload_dict)
+
     @property
     def token(self: Self) -> str:
         """Encode data into JWT token."""
