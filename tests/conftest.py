@@ -21,6 +21,7 @@ from src.config import config
 from src.entity.models import Entity
 from src.files.enums import Extension, MimeType
 from src.files.models import File
+from src.profile.models import Profile
 from src.shared.database import get_db
 from src.shared.storage import Minio
 from tests.utils.database import set_autoincrement_counters
@@ -70,6 +71,68 @@ def db_with_one_account(db_empty):
         value=hash_object.hexdigest(),
     )
     session.add(test_password_hash)
+
+    profile = Profile(
+        account_id=1,
+        username="test",
+    )
+    session.add(profile)
+    session.commit()
+    return session
+
+
+@pytest.fixture
+def db_with_one_account_and_two_files(db_with_one_account_one_session):
+    """Create database with one account and two unrelated files."""
+    session = db_with_one_account_one_session
+    session.add_all([
+        File(
+            id=1,
+            extension=Extension.JPG,
+            filename="testjpg.jpg",
+            mime_type=MimeType.IMAGE_JPEG,
+            size=15,
+        ),
+        File(
+            id=2,
+            extension=Extension.PNG,
+            filename="testpng.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=15,
+        ),
+    ])
+    session.commit()
+    return session
+
+
+@pytest.fixture
+def db_with_two_accounts_one_session(db_with_one_account_one_session):
+    """Create database with two accounts."""
+    session = db_with_one_account_one_session
+    test_account = Account(
+        id=2,
+        email="test02@gmail.com",
+    )
+    session.add(test_account)
+
+    salt = "7d360089-5dcd-4216-9e92-bc4d836a443b"
+    salted_password = "testpassword02" + salt
+    hash_object = hashlib.new(Algorithm.SHA256.value)
+    hash_object.update(salted_password.encode("ascii"))
+
+    test_password_hash = PasswordHash(
+        account_id=2,
+        algorithm=Algorithm.SHA256,
+        salt=UUID(salt),
+        value=hash_object.hexdigest(),
+    )
+    session.add(test_password_hash)
+
+    profile = Profile(
+        account_id=2,
+        username="test02",
+    )
+    session.add(profile)
     session.commit()
     return session
 

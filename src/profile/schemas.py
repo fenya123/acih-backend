@@ -10,10 +10,10 @@ class Profile(BaseModel):
 
     account_id: int
 
-    avatar_id: str | None = None
-    background_id: str | None = None
-    description: str | None = Field(min_length=1, max_length=1000)
-    info: str | None = Field(min_length=1, max_length=100, pattern=r"[\w.` \-()]+")
+    avatar_id: int | None = Field(default=None, gt=0)
+    background_id: int | None = Field(default=None, gt=0)
+    description: str | None = Field(default=None, min_length=1, max_length=1000)
+    info: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"[A-Za-z.' \-()]+")
     username: str = Field(min_length=1, max_length=30, pattern=r"[a-z][a-z0-9_]")
 
 
@@ -26,8 +26,8 @@ class Profiles(BaseModel):
 class ProfileData(BaseModel):
     """Profile data schema."""
 
-    avatar_id: str | None = None
-    background_id: str | None = None
-    description: str | None = None
-    info: str | None = None
-    username: str
+    avatar_id: int | None = Field(default=None, gt=0)
+    background_id: int | None = Field(default=None, gt=0)
+    description: str | None = Field(default=None, min_length=1, max_length=1000)
+    info: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"[A-Za-z.' \-()]+")
+    username: str = Field(min_length=1, max_length=30, pattern=r"[a-z][a-z0-9_]")
