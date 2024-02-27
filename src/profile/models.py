@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 
 from src.profile.schemas import ProfileData
 from src.shared.database import Base
+from src.shared.exceptions import NotFoundException
 
 
 class Profile(Base):
@@ -34,6 +35,16 @@ class Profile(Base):
         db.add(new_profile)
         db.flush()
         return new_profile
+
+    @classmethod
+    def get_by_email(cls: type[Profile], db: Session, username: str) -> Profile:
+        """Get profile by username."""
+        query = select(Profile).where(Profile.username == username)
+        row = db.execute(query).one_or_none()
+        if row is None:
+            msg = "Account not found"
+            raise NotFoundException(msg)
+        return typing.cast(Profile, row.Profile)
 
     @classmethod
     def get_multiple(cls: type[Profile], db: Session, account_ids: list[int]) -> list[Profile]:

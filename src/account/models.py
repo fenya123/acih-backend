@@ -79,6 +79,16 @@ class Account(Base):
 
         return typing.cast(Account, row.Account)
 
+    @classmethod
+    def get_by_email(cls: type[Account], db: Session, email: str) -> Account:
+        """Get Account by e-mail."""
+        query = select(Account).where(Account.email == email)
+        row = db.execute(query).one_or_none()
+        if row is None:
+            msg = "Account not found"
+            raise NotFoundException(msg)
+        return typing.cast(Account, row.Account)
+
     def has_session(self: Self, session_id: uuid.UUID) -> bool:
         """Check whether or not Account instance has session with specified id."""
         for session in self.sessions:  # noqa: SIM110

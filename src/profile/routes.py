@@ -70,3 +70,15 @@ def get_profiles(
 ) -> Profiles:
     """Get several profiles endpoint."""
     return controllers.get_profiles(account_ids, db)
+
+
+@router.get(
+    "/profiles/{username}",
+    status_code=status.HTTP_200_OK,
+)
+def check_profile_username(
+    db: Db,
+    username: Annotated[str, Path()],
+) -> bool:
+    """Check whether profile with a specified username exists or not."""
+    return controllers.check_profile_username(db, username)

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Body, status
+from fastapi import APIRouter, Body, Path, status
 
 from src.account import controllers
 from src.account.schemas import AccountWithProfile, NewAccount
@@ -25,3 +25,15 @@ def create_account(
 ) -> AccountWithProfile:
     """Create account endpoint."""
     return controllers.create_account(new_account=new_account, db=db)
+
+
+@router.get(
+    "/accounts/{email}",
+    status_code=status.HTTP_200_OK,
+)
+def check_account_email(
+    db: Db,
+    email: Annotated[str, Path()],
+) -> bool:
+    """Check whether account with a specified e-mail exists or not."""
+    return controllers.check_account_email(db, email)

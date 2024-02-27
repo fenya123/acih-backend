@@ -9,6 +9,7 @@ from fastapi import HTTPException, status
 from src.account.models import Account
 from src.profile.models import Profile as ProfileModel
 from src.profile.schemas import Profile, Profiles
+from src.shared.exceptions import NotFoundException
 
 
 if TYPE_CHECKING:
@@ -41,3 +42,12 @@ def get_profiles(account_ids: list[int], db: Session) -> Profiles:
     profiles = ProfileModel.get_multiple(db, account_ids)
 
     return Profiles.model_validate({"profiles": profiles}, from_attributes=True)
+
+
+def check_profile_username(db: Session, username: str) -> bool:
+    """Check whether profile with a specified username exists or not."""
+    try:
+        profile = ProfileModel.get_by_email(db, username)
+    except NotFoundException:
+        return True
+    return False
