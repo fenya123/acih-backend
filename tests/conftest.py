@@ -21,6 +21,7 @@ from src.config import config
 from src.entity.models import Entity
 from src.files.enums import Extension, MimeType
 from src.files.models import File
+from src.following.models import Following
 from src.profile.models import Profile
 from src.shared.database import get_db
 from src.shared.storage import Minio
@@ -133,6 +134,20 @@ def db_with_two_accounts_one_session(db_with_one_account_one_session):
         username="test02",
     )
     session.add(profile)
+    session.commit()
+    return session
+
+
+@pytest.fixture
+def db_with_two_accounts_one_session_one_following(db_with_two_accounts_one_session):
+    """Create database with two accounts, with the one authorized following the other."""
+    session = db_with_two_accounts_one_session
+    test_following = Following(
+        id=1,
+        follower_id=1,
+        followee_id=2,
+    )
+    session.add(test_following)
     session.commit()
     return session
 

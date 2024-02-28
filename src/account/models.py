@@ -13,6 +13,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 from src.account.enums import Algorithm
 from src.auth.models import Session as SessionModel
 from src.auth.schemas import Credentials
+from src.following.models import Following
 from src.profile.models import Profile
 from src.shared.database import Base
 from src.shared.exceptions import NotFoundException
@@ -79,6 +80,14 @@ class Account(Base):
 
         return typing.cast(Account, row.Account)
 
+    def has_follower(self: Self, db: Session, follower_id: int) -> bool:
+        """Check if account has follower with provided id."""
+        query = select(Following).where(
+            Following.follower_id == follower_id,
+            Following.followee_id == self.id,
+        )
+        return db.execute(query).one_or_none() is not None
+
     def has_session(self: Self, session_id: uuid.UUID) -> bool:
         """Check whether or not Account instance has session with specified id."""
         for session in self.sessions:  # noqa: SIM110
@@ -89,6 +98,10 @@ class Account(Base):
     def create_session(self: Self, db: Session) -> SessionModel:
         """Create Session object."""
         return SessionModel.new_object(db, self.id)
+
+    def add_follower(self: Self, db: Session, follower_id: int) -> Following:
+        """Add a follower to an account."""
+        return Following.new_object(db, self.id, follower_id)
 
 
 class PasswordHash(Base):

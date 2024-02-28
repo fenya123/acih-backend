@@ -8,7 +8,10 @@ from fastapi import APIRouter, Body, Depends, Path, Query, status
 from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.dependencies import get_token
+from src.auth.schemas import TokenPayload
+from src.following import controllers
 from src.following.schemas import Followees, Followers, Following, FollowingCounts, NewFollowing
+from src.shared.database import Db
 
 
 router = APIRouter(tags=["following"])
@@ -25,10 +28,12 @@ router = APIRouter(tags=["following"])
     status_code=status.HTTP_201_CREATED,
 )
 def create_following(
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    new_following: Annotated[NewFollowing, Body()],  # noqa: ARG001
-) -> None:
+    db: Db,
+    token: Annotated[TokenPayload, Depends(get_token)],
+    new_following: Annotated[NewFollowing, Body()],
+) -> Following:
     """Create a Following object."""
+    return controllers.create_following(db, token, new_following)
 
 
 @router.get(

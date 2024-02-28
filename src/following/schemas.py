@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 
 
 class NewFollowing(BaseModel):
@@ -10,6 +10,14 @@ class NewFollowing(BaseModel):
 
     follower_id: int
     followee_id: int
+
+    @model_validator(mode="after")
+    def check_following_self(self) -> NewFollowing:  # noqa: ANN101
+        """Check if passed ids are the same (trying to follow self)."""
+        if self.follower_id == self.followee_id:
+            msg = "Can't follow self."
+            raise ValueError(msg)
+        return self
 
 
 class Following(BaseModel):
