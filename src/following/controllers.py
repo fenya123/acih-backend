@@ -8,6 +8,7 @@ from fastapi import HTTPException, status
 
 from src.account.models import Account
 from src.following.schemas import Following as FollowingSchema
+from src.following.schemas import FollowingCounts
 
 
 if TYPE_CHECKING:
@@ -28,3 +29,10 @@ def create_following(db: Session, token: TokenPayload, new_following: NewFollowi
     following = account.add_follower(db, new_following.follower_id)
 
     return FollowingSchema.model_validate(following, from_attributes=True)
+
+
+def get_following_counts(db: Session, account_ids: list[int]) -> FollowingCounts:
+    """Get following counts for account(s)."""
+    counts = Account.get_counts(db=db, account_ids=account_ids)
+
+    return FollowingCounts(following_counts=counts)

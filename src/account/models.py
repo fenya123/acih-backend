@@ -7,13 +7,14 @@ import typing
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Enum, ForeignKey, Integer, select, String
+from sqlalchemy import Enum, ForeignKey, func, Integer, select, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 
 from src.account.enums import Algorithm
 from src.auth.models import Session as SessionModel
 from src.auth.schemas import Credentials
 from src.following.models import Following
+from src.following.schemas import FollowingCount
 from src.profile.models import Profile
 from src.shared.database import Base
 from src.shared.exceptions import NotFoundException
@@ -79,6 +80,45 @@ class Account(Base):
             raise NotFoundException(msg)
 
         return typing.cast(Account, row.Account)
+
+    @classmethod
+    def get_counts(cls: type[Account], db: Session, account_ids: list[int]) -> list[FollowingCount]:
+        """Get following counts."""
+        followers_subq = (
+            select(
+                Account.id.label("account_id"),
+                func.count(Following.followee_id).label("followers"),  # pylint: disable=not-callable
+            )
+            .select_from(Account)
+            .outerjoin(Following, Account.id == Following.followee_id)
+            .group_by(Account.id)
+            .where(Account.id.in_(account_ids))
+            .subquery()
+        )
+        followees_subq = (
+            select(
+                Account.id.label("account_id"),
+                # pylint: disable-next=not-callable
+                func.count(Following.follower_id).label("followees"),
+            )
+            .select_from(Account)
+            .outerjoin(Following, Account.id == Following.follower_id)
+            .group_by(Account.id)
+            .where(Account.id.in_(account_ids))
+            .subquery()
+        )
+        query = (
+            select(
+                followers_subq.c.account_id,
+                followers_subq.c.followers,
+                followees_subq.c.followees,
+            )
+            .select_from(followers_subq)
+            .join(followees_subq, followers_subq.c.account_id == followees_subq.c.account_id)
+            .order_by(followers_subq.c.account_id)
+        )
+        rows = db.execute(query).all()
+        return [FollowingCount.model_validate(row, from_attributes=True) for row in rows]
 
     def has_follower(self: Self, db: Session, follower_id: int) -> bool:
         """Check if account has follower with provided id."""

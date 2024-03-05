@@ -153,6 +153,54 @@ def db_with_two_accounts_one_session_one_following(db_with_two_accounts_one_sess
 
 
 @pytest.fixture
+def db_with_several_following_relationsips(db_empty):
+    """Several accounts with different following relationships."""
+    session = db_empty
+    session.add_all([
+        Account(id=1, email="test1@gmail.com"),
+        Account(id=2, email="test2@gmail.com"),
+        Account(id=3, email="test3@gmail.com"),
+    ])
+    session.flush()
+
+    salt = "e570d2d0-0515-49ee-9f08-68f34026028c"
+    salted_password = "testpassword" + salt
+    hash_object = hashlib.new(Algorithm.SHA256.value)
+    hash_object.update(salted_password.encode("ascii"))
+    session.add_all([
+        PasswordHash(account_id=1, algorithm=Algorithm.SHA256, salt=UUID(salt), value=hash_object.hexdigest()),
+        PasswordHash(account_id=2, algorithm=Algorithm.SHA256, salt=UUID(salt), value=hash_object.hexdigest()),
+        PasswordHash(account_id=3, algorithm=Algorithm.SHA256, salt=UUID(salt), value=hash_object.hexdigest()),
+    ])
+    session.flush()
+
+    session.add_all([
+        Profile(account_id=1, username="test1"),
+        Profile(account_id=2, username="test2"),
+        Profile(account_id=3, username="test3"),
+    ])
+    session.flush()
+    session.commit()
+
+    session.add_all([
+        Following(id=1, follower_id=1, followee_id=2),
+        Following(id=2, follower_id=1, followee_id=3),
+
+        Following(id=3, follower_id=3, followee_id=1),
+        Following(id=4, follower_id=3, followee_id=2),
+    ])
+    session.flush()
+
+    test_session = Session(
+        id=UUID("441d78c0-c031-4fa6-9f2a-78200da5c0fe"),
+        account_id=1,
+    )
+    session.add(test_session)
+    session.flush()
+    return session
+
+
+@pytest.fixture
 def db_with_one_account_one_session(db_with_one_account):
     """Create database with one account (and password hash) with a session."""
     session = db_with_one_account

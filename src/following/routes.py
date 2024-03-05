@@ -40,16 +40,17 @@ def create_following(
     "/following/counts",
     responses={
         status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_403_FORBIDDEN: {},
     },
     response_model=FollowingCounts,
     status_code=status.HTTP_200_OK,
 )
 def get_following_counts(
-    account_ids: Annotated[list[int], Query(alias="account_id")],  # noqa: ARG001
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-) -> None:
+    account_ids: Annotated[list[int], Query(alias="account_id")],
+    db: Db,
+    token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
+) -> FollowingCounts:
     """Get following counts for account(s)."""
+    return controllers.get_following_counts(db, account_ids)
 
 
 @router.get(
