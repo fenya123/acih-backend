@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, Path, Query, status
-from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.dependencies import get_token
 from src.auth.schemas import TokenPayload
@@ -54,41 +53,43 @@ def get_following_counts(
 
 
 @router.get(
-    "/accounts/{accounts_id}/followers",
+    "/accounts/{account_id}/followers",
     responses={
         status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_403_FORBIDDEN: {},
         status.HTTP_404_NOT_FOUND: {},
     },
     response_model=Followers,
     status_code=status.HTTP_200_OK,
 )
 def get_followers(
-    account_id: Annotated[int, Path()],  # noqa: ARG001
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    limit: Annotated[int, Query()],  # noqa: ARG001
-    offset: Annotated[int, Query()],  # noqa: ARG001
-) -> None:
+    account_id: Annotated[int, Path()],
+    db: Db,
+    token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
+    limit: Annotated[int, Query()],
+    offset: Annotated[int, Query()],
+) -> Followers:
     """Get a list of an account's followers."""
+    return controllers.get_followers(db, account_id, limit, offset)
 
 
 @router.get(
     "/accounts/{account_id}/followees",
     responses={
         status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_403_FORBIDDEN: {},
         status.HTTP_404_NOT_FOUND: {},
     },
     response_model=Followees,
     status_code=status.HTTP_200_OK,
 )
 def get_followees(
-    account_id: Annotated[int, Path()],  # noqa: ARG001
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    limit: Annotated[int, Query()],  # noqa: ARG001
-    offset: Annotated[int, Query()],  # noqa: ARG001
-) -> None:
+    account_id: Annotated[int, Path()],
+    db: Db,
+    token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
+    limit: Annotated[int, Query()],
+    offset: Annotated[int, Query()],
+) -> Followees:
     """Get a list of an account's followees."""
+    return controllers.get_followees(db, account_id, limit, offset)
 
 
 @router.delete(
@@ -102,8 +103,10 @@ def get_followees(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def remove_followee(
-    account_id: Annotated[int, Path()],  # noqa: ARG001
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    followee_id: Annotated[int, Path()],  # noqa: ARG001
+    account_id: Annotated[int, Path()],
+    db: Db,
+    token: Annotated[TokenPayload, Depends(get_token)],
+    followee_id: Annotated[int, Path()],
 ) -> None:
     """Remove a followee."""
+    return controllers.remove_followee(db, token, account_id, followee_id)

@@ -7,14 +7,14 @@ import typing
 import uuid
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Enum, ForeignKey, func, Integer, select, String
+from sqlalchemy import delete, Enum, ForeignKey, func, Integer, select, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 
 from src.account.enums import Algorithm
 from src.auth.models import Session as SessionModel
 from src.auth.schemas import Credentials
 from src.following.models import Following
-from src.following.schemas import FollowingCount
+from src.following.schemas import Followee, Follower, FollowingCount
 from src.profile.models import Profile
 from src.shared.database import Base
 from src.shared.exceptions import NotFoundException
@@ -120,6 +120,38 @@ class Account(Base):
         rows = db.execute(query).all()
         return [FollowingCount.model_validate(row, from_attributes=True) for row in rows]
 
+    def get_followers(self: Self, db: Session, limit: int, offset: int) -> list[Follower]:
+        """Get a list of an account's followers."""
+        query = (
+            select(Following.follower_id.label("account_id"))
+            .where(Following.followee_id == self.id)
+            .order_by(Following.follower_id)
+            .offset(offset)
+            .limit(limit)
+        )
+        rows = db.execute(query)
+        return [Follower.model_validate(row, from_attributes=True) for row in rows]
+
+    def get_followees(self: Self, db: Session, limit: int, offset: int) -> list[Followee]:
+        """Get a list of an account's followees."""
+        query = (
+            select(Following.followee_id.label("account_id"))
+            .where(Following.follower_id == self.id)
+            .order_by(Following.followee_id)
+            .offset(offset)
+            .limit(limit)
+        )
+        rows = db.execute(query)
+        return [Followee.model_validate(row, from_attributes=True) for row in rows]
+
+    def has_followee(self: Self, db: Session, followee_id: int) -> bool:
+        """Check if account has followee with provided id."""
+        query = select(Following).where(
+            Following.followee_id == followee_id,
+            Following.follower_id == self.id,
+        )
+        return db.execute(query).one_or_none() is not None
+
     def has_follower(self: Self, db: Session, follower_id: int) -> bool:
         """Check if account has follower with provided id."""
         query = select(Following).where(
@@ -142,6 +174,11 @@ class Account(Base):
     def add_follower(self: Self, db: Session, follower_id: int) -> Following:
         """Add a follower to an account."""
         return Following.new_object(db, self.id, follower_id)
+
+    def remove_followee(self: Self, db: Session, followee_id: int) -> None:
+        """Remove a followee."""
+        query = delete(Following).where(Following.follower_id == self.id, Following.followee_id == followee_id)
+        db.execute(query)
 
 
 class PasswordHash(Base):
