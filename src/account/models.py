@@ -82,6 +82,14 @@ class Account(Base):
         return typing.cast(Account, row.Account)
 
     @classmethod
+    def exists(cls: type[Account], db: Session, email: str) -> bool:
+        """Check whether account with a specified e-mail exists or not."""
+        query = select(Account).where(Account.email == email)
+        row = db.execute(query).one_or_none()
+
+        return row is not None
+
+    @classmethod
     def get_counts(cls: type[Account], db: Session, account_ids: list[int]) -> list[FollowingCount]:
         """Get following counts."""
         followers_subq = (

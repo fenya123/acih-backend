@@ -42,6 +42,14 @@ class Profile(Base):
         rows = db.execute(query).all()
         return [typing.cast(Profile, row.Profile) for row in rows]
 
+    @classmethod
+    def exists(cls: type[Profile], db: Session, username: str) -> bool:
+        """Check whether profile with a specified username exists or not."""
+        query = select(Profile).where(Profile.username == username)
+        row = db.execute(query).one_or_none()
+
+        return row is not None
+
     def update(self: Self, profile_data: ProfileData, db: Session) -> None:
         """Update profile's database object."""
         query = (

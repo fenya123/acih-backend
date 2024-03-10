@@ -34,3 +34,9 @@ class AccountWithProfile(BaseModel):
 
     account: Account
     profile: Profile
+
+
+class ExistenceCheck(BaseModel):
+    """Schema for existence check."""
+
+    exists: bool
