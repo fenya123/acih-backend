@@ -23,6 +23,7 @@ optional = true
 alembic = {extras = ["tz"], version = "1.12.0"}
 fastapi = {version = "0.109.0", extras = ["all"]}
 minio = "7.1.17"
+pillow = "10.2.0"
 psycopg2-binary = "2.9.7"
 pydantic = "2.5.3"
 pyjwt = "2.8.0"
@@ -41,7 +42,7 @@ pylint = "2.17.4"
 pylint-per-file-ignores = "1.2.1"
 pylint-pydantic = "0.2.0"  # A Pylint plugin to help Pylint understand the Pydantic.
 ruff = "0.0.272"
-
+types-pillow = "10.2.0.20240423"
 
 [tool.poetry.group.test]
 optional = true

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Post(BaseModel):
@@ -11,10 +11,10 @@ class Post(BaseModel):
     id: int  # noqa: A003
 
     account_id: int
-    description: str | None = None
-    file_id: str
-    preview_id: str
-    title: str | None = None
+    description: str | None = Field(default=None, min_length=1, max_length=1000)
+    file_id: int
+    preview_id: int
+    title: str | None = Field(default=None, min_length=1, max_length=100)
 
 
 class Posts(BaseModel):
@@ -26,9 +26,9 @@ class Posts(BaseModel):
 class PostContent(BaseModel):
     """Post content schema."""
 
-    description: str | None = None
-    file_id: str
-    title: str | None = None
+    description: str | None = Field(default=None, min_length=1, max_length=1000)
+    file_id: int
+    title: str | None = Field(default=None, min_length=1, max_length=100)
 
 
 class PostsCount(BaseModel):

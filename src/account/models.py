@@ -15,6 +15,8 @@ from src.auth.models import Session as SessionModel
 from src.auth.schemas import Credentials
 from src.following.models import Following
 from src.following.schemas import Followee, Follower, FollowingCount
+from src.post.models import Post
+from src.post.schemas import PostContent
 from src.profile.models import Profile
 from src.shared.database import Base
 from src.shared.exceptions import NotFoundException
@@ -182,6 +184,10 @@ class Account(Base):
     def add_follower(self: Self, db: Session, follower_id: int) -> Following:
         """Add a follower to an account."""
         return Following.new_object(db, self.id, follower_id)
+
+    def add_post(self: Self, db: Session, preview_id: int, post_content: PostContent) -> Post:
+        """Create post for an account."""
+        return Post.new_object(db, self.id, preview_id, post_content)
 
     def remove_followee(self: Self, db: Session, followee_id: int) -> None:
         """Remove a followee."""

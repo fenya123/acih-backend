@@ -3,13 +3,18 @@
 
 from __future__ import annotations
 
+import pathlib
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, Path, Query, status
+from fastapi import APIRouter, BackgroundTasks, Body, Depends, Path, Query, status
 from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.dependencies import get_token
+from src.auth.schemas import TokenPayload
+from src.files.dependencies import get_tmp_dir
+from src.post import controllers
 from src.post.schemas import Post, PostContent, Posts, PostsCounts
+from src.shared.database import Db
 
 
 router = APIRouter(tags=["post"])
@@ -25,10 +30,20 @@ router = APIRouter(tags=["post"])
     status_code=status.HTTP_201_CREATED,
 )
 def create_post(
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    post_content: Annotated[PostContent, Body()],  # noqa: ARG001
-) -> None:
+    db: Db,
+    background_tasks: BackgroundTasks,
+    token: Annotated[TokenPayload, Depends(get_token)],
+    tmp_dir: Annotated[pathlib.Path, Depends(get_tmp_dir)],
+    post_content: Annotated[PostContent, Body()],
+) -> Post:
     """Create post."""
+    return controllers.create_post(
+        db=db,
+        token=token,
+        post_content=post_content,
+        background_tasks=background_tasks,
+        tmp_dir=tmp_dir,
+    )
 
 
 @router.get(

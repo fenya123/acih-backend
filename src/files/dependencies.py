@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import tempfile
+from pathlib import Path
+
 from fastapi import HTTPException, status, UploadFile  # noqa: TCH002
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
@@ -46,3 +49,8 @@ def get_new_file(file: UploadFile) -> FileData:
         )
     except ValidationError as e:
         raise RequestValidationError(errors=e.errors()) from e
+
+
+def get_tmp_dir() -> Path:
+    """Create temporary directory and return it's path."""
+    return Path(tempfile.mkdtemp())

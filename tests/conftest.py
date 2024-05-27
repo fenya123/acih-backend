@@ -301,3 +301,33 @@ def storage_with_one_object(storage_empty, tmp_path):
         file_path=filepath,
     )
     return storage_empty
+
+
+@pytest.fixture
+def storage_with_one_image(storage_empty):
+    """Storage with one image."""
+    filepath = Path(__file__).parent / "post" / "image.png"
+    filepath.write_bytes(filepath.read_bytes())
+    storage_empty.fput_object(
+        bucket_name=storage_empty.BUCKETS[0],
+        object_name="1",
+        file_path=filepath,
+    )
+    return storage_empty
+
+
+@pytest.fixture
+def db_with_one_account_and_one_image(db_with_one_account_one_session):
+    """Storage with one account and one image."""
+    session = db_with_one_account_one_session
+    session.add_all([
+        File(
+            id=1,
+            extension=Extension.PNG,
+            filename="image.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=21_127_393,
+        ),
+    ])
+    session.commit()
+    return session

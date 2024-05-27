@@ -31,6 +31,7 @@ from src.auth.models import Session
 from src.entity.models import Entity
 from src.files.models import File
 from src.following.models import Following
+from src.post.models import Post
 from src.profile.models import Profile
 
 # other values from the config, defined by the needs of env.py,

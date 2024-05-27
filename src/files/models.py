@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, Enum, Integer, select, String
 from sqlalchemy.orm import Mapped, mapped_column, Session
@@ -12,6 +13,10 @@ from src.files.schemas import FileData
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 from src.shared.exceptions import NotFoundException
+
+
+if TYPE_CHECKING:
+    from typing import Self
 
 
 class File(Base):
@@ -54,3 +59,15 @@ class File(Base):
             raise NotFoundException(msg)
         file: File = row.File
         return file
+
+    def generate_preview(self: Self, db: Session, size: int) -> File:
+        """Generate a preview of a file."""
+        preview = File(
+            extension=self.extension,
+            filename=f"preview_{self.filename}",
+            mime_type=self.mime_type,
+            size=size,
+        )
+        db.add(preview)
+        db.flush()
+        return preview
