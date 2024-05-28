@@ -50,3 +50,10 @@ def create_post(
 
     background_tasks.add_task(shutil.rmtree, tmp_dir)
     return Post.model_validate(post, from_attributes=True)
+
+
+def get_post(db: Session, account_id: int, post_id: int) -> Post:
+    """Get post."""
+    account = Account.get(db, account_id)
+
+    return account.get_post(db, post_id)

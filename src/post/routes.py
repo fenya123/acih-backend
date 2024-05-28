@@ -57,11 +57,17 @@ def create_post(
     status_code=status.HTTP_200_OK,
 )
 def get_post(
-    account_id: Annotated[int, Path()],  # noqa: ARG001
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    post_id: Annotated[int, Path()],  # noqa: ARG001
-) -> None:
+    db: Db,
+    account_id: Annotated[int, Path()],
+    token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
+    post_id: Annotated[int, Path()],
+) -> Post:
     """Get an account's post."""
+    return controllers.get_post(
+        db=db,
+        account_id=account_id,
+        post_id=post_id,
+    )
 
 
 @router.get(

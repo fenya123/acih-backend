@@ -16,6 +16,7 @@ from src.auth.schemas import Credentials
 from src.following.models import Following
 from src.following.schemas import Followee, Follower, FollowingCount
 from src.post.models import Post
+from src.post.schemas import Post as PostSchema
 from src.post.schemas import PostContent
 from src.profile.models import Profile
 from src.shared.database import Base
@@ -153,6 +154,18 @@ class Account(Base):
         )
         rows = db.execute(query)
         return [Followee.model_validate(row, from_attributes=True) for row in rows]
+
+    def get_post(self: Self, db: Session, post_id: int) -> PostSchema:
+        """Get an account's post."""
+        query = select(Post).where(
+            Post.account_id == self.id,
+            Post.id == post_id,
+        )
+        row = db.execute(query).one_or_none()
+        if row is None:
+            msg = "Post not found"
+            raise NotFoundException(msg)
+        return PostSchema.model_validate(row.Post, from_attributes=True)
 
     def has_followee(self: Self, db: Session, followee_id: int) -> bool:
         """Check if account has followee with provided id."""

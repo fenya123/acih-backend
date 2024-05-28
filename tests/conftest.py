@@ -22,6 +22,7 @@ from src.entity.models import Entity
 from src.files.enums import Extension, MimeType
 from src.files.models import File
 from src.following.models import Following
+from src.post.models import Post
 from src.profile.models import Profile
 from src.shared.database import get_db
 from src.shared.storage import Minio
@@ -317,6 +318,19 @@ def storage_with_one_image(storage_empty):
 
 
 @pytest.fixture
+def storage_with_one_image_and_preview(storage_with_one_image):
+    """Storage with one image and a preview generated out of it."""
+    filepath = Path(__file__).parent / "post" / "image-preview.png"
+    filepath.write_bytes(filepath.read_bytes())
+    storage_with_one_image.fput_object(
+        bucket_name=storage_with_one_image.BUCKETS[0],
+        object_name="2",
+        file_path=filepath,
+    )
+    return storage_with_one_image
+
+
+@pytest.fixture
 def db_with_one_account_and_one_image(db_with_one_account_one_session):
     """Storage with one account and one image."""
     session = db_with_one_account_one_session
@@ -329,5 +343,32 @@ def db_with_one_account_and_one_image(db_with_one_account_one_session):
             size=21_127_393,
         ),
     ])
+    session.commit()
+    return session
+
+
+@pytest.fixture
+def db_with_one_account_one_post(db_with_one_account_and_one_image):
+    """Database contains an account with a session, image with a preview and a post."""
+    session = db_with_one_account_and_one_image
+    preview = File(
+        id=2,
+        extension=Extension.PNG,
+        filename="image-preview.png",
+        mime_type=MimeType.IMAGE_PNG,
+        size=643_933,
+    )
+    session.add(preview)
+    session.flush()
+
+    post = Post(
+        id=1,
+        account_id=1,
+        description="test",
+        file_id=1,
+        preview_id=2,
+        title="test",
+    )
+    session.add(post)
     session.commit()
     return session
