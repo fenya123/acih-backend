@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from src.account.models import Account
 from src.files.image_processor import ImageProcessor
 from src.files.models import File
-from src.post.schemas import Post
+from src.post.schemas import Post, Posts
 from src.shared.storage import Minio
 
 
@@ -57,3 +57,11 @@ def get_post(db: Session, account_id: int, post_id: int) -> Post:
     account = Account.get(db, account_id)
 
     return account.get_post(db, post_id)
+
+
+def get_posts(db: Session, account_id: int, limit: int, offset: int) -> Posts:
+    """Get a list of user's posts."""
+    account = Account.get(db, account_id)
+    posts = account.get_posts(db=db, limit=limit, offset=offset)
+
+    return Posts(posts=posts)

@@ -81,12 +81,19 @@ def get_post(
     status_code=status.HTTP_200_OK,
 )
 def get_posts(
-    account_id: Annotated[int, Path()],  # noqa: ARG001
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    limit: Annotated[int, Query()],  # noqa: ARG001
-    offset: Annotated[int, Query()],  # noqa: ARG001
-) -> None:
+    db: Db,
+    account_id: Annotated[int, Path()],
+    token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
+    limit: Annotated[int, Query()],
+    offset: Annotated[int, Query()],
+) -> Posts:
     """Get a list of an account's posts."""
+    return controllers.get_posts(
+        db=db,
+        account_id=account_id,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.get(

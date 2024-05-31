@@ -170,6 +170,18 @@ class Account(Base):
             raise NotFoundException(msg)
         return PostSchema.model_validate(row.Post, from_attributes=True)
 
+    def get_posts(self: Self, db: Session, limit: int, offset: int) -> list[PostSchema]:
+        """Get a list of an account's posts."""
+        query = (
+            select(Post)
+            .where(Post.account_id == self.id)
+            .order_by(Post.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
+        rows = db.execute(query)
+        return [PostSchema.model_validate(row.Post, from_attributes=True) for row in rows]
+
     def has_followee(self: Self, db: Session, followee_id: int) -> bool:
         """Check if account has followee with provided id."""
         query = select(Following).where(
