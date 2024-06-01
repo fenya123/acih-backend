@@ -106,7 +106,12 @@ def get_posts(
     status_code=status.HTTP_200_OK,
 )
 def get_posts_counts(
-    account_ids: Annotated[list[int], Query(alias="account_id")],  # noqa: ARG001
+    db: Db,
+    account_ids: Annotated[list[int], Query(alias="account_id")],
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-) -> None:
-    """Get several profiles endpoint."""
+) -> PostsCounts:
+    """Get posts counts."""
+    return controllers.get_posts_counts(
+        db=db,
+        account_ids=account_ids,
+    )

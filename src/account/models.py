@@ -18,7 +18,7 @@ from src.following.models import Following
 from src.following.schemas import Followee, Follower, FollowingCount
 from src.post.models import Post
 from src.post.schemas import Post as PostSchema
-from src.post.schemas import PostContent
+from src.post.schemas import PostContent, PostsCount
 from src.profile.models import Profile
 from src.shared.database import Base
 from src.shared.datetime import utcnow
@@ -133,6 +133,22 @@ class Account(Base):
         )
         rows = db.execute(query).all()
         return [FollowingCount.model_validate(row, from_attributes=True) for row in rows]
+
+    @classmethod
+    def get_posts_counts(cls: type[Account], db: Session, account_ids: list[int]) -> list[PostsCount]:
+        """Get following counts."""
+        query = (
+            select(
+                Post.account_id,
+                func.count(Post.id).label("count"),  # pylint: disable=not-callable
+            )
+            .select_from(Post)
+            .group_by(Post.account_id)
+            .where(Post.account_id.in_(account_ids))
+            .order_by(Post.account_id.desc())
+        )
+        rows = db.execute(query).all()
+        return [PostsCount.model_validate(row, from_attributes=True) for row in rows]
 
     def get_followers(self: Self, db: Session, limit: int, offset: int) -> list[Follower]:
         """Get a list of an account's followers."""

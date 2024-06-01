@@ -372,3 +372,92 @@ def db_with_one_account_one_post(db_with_one_account_and_one_image):
     session.add(post)
     session.commit()
     return session
+
+
+@pytest.fixture
+def db_with_two_accounts_several_posts(db_with_one_account_one_session):
+    """Database with two accounts, both of them having at least one post and one session."""
+    session = db_with_one_account_one_session
+
+    test_account = Account(
+        id=2,
+        email="test02@gmail.com",
+    )
+    session.add(test_account)
+    session.flush()
+
+    session.add_all([
+        File(
+            id=1,
+            extension=Extension.JPG,
+            filename="testjpg1.jpg",
+            mime_type=MimeType.IMAGE_JPEG,
+            size=15,
+        ),
+        File(
+            id=2,
+            extension=Extension.PNG,
+            filename="testjpg1-preview.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=15,
+        ),
+        File(
+            id=3,
+            extension=Extension.JPG,
+            filename="testjpg2.jpg",
+            mime_type=MimeType.IMAGE_JPEG,
+            size=15,
+        ),
+        File(
+            id=4,
+            extension=Extension.PNG,
+            filename="testjpg2-preview.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=15,
+        ),
+        File(
+            id=5,
+            extension=Extension.JPG,
+            filename="testjpg3.jpg",
+            mime_type=MimeType.IMAGE_JPEG,
+            size=15,
+        ),
+        File(
+            id=6,
+            extension=Extension.PNG,
+            filename="testjpg3-preview.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=15,
+        ),
+    ])
+
+    session.flush()
+
+    session.add_all([
+        Post(
+            id=1,
+            account_id=1,
+            description="test post 1",
+            file_id=1,
+            preview_id=2,
+            title="test post 1",
+        ),
+        Post(
+            id=2,
+            account_id=1,
+            description="test post 2",
+            file_id=3,
+            preview_id=4,
+            title="test post 2",
+        ),
+        Post(
+            id=3,
+            account_id=2,
+            description="test post 3",
+            file_id=5,
+            preview_id=6,
+            title="test post 3",
+        ),
+    ])
+    session.commit()
+    return session
