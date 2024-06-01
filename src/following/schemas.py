@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from pydantic import BaseModel, model_validator
 
 
@@ -27,6 +29,7 @@ class Following(BaseModel):
 
     followee_id: int
     follower_id: int
+    created_at: datetime
 
 
 class Follower(BaseModel):

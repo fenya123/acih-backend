@@ -4,14 +4,16 @@ from __future__ import annotations
 
 import typing
 import uuid
+from datetime import datetime
 from typing import Self
 
-from sqlalchemy import delete, ForeignKey, select
+from sqlalchemy import DateTime, delete, ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import Session as DBSession
 from sqlalchemy.types import UUID
 
 from src.shared.database import Base
+from src.shared.datetime import utcnow
 from src.shared.exceptions import NotFoundException
 
 
@@ -23,6 +25,7 @@ class Session(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)  # noqa: A003
 
     account_id: Mapped[int] = mapped_column(ForeignKey("account.id"), nullable=False, unique=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     account: Mapped["Account"] = relationship("Account", back_populates="sessions")  # type: ignore[name-defined]  # noqa: F821,UP037,E501
 

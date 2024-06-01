@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -15,6 +17,7 @@ class Profile(BaseModel):
     description: str | None = Field(default=None, min_length=1, max_length=1000)
     info: str | None = Field(default=None, min_length=1, max_length=100, pattern=r"[A-Za-z.' \-()]+")
     username: str = Field(min_length=1, max_length=30, pattern=r"[a-z][a-z0-9_]")
+    created_at: datetime
 
 
 class Profiles(BaseModel):

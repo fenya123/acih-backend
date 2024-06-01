@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 
@@ -15,6 +17,7 @@ class Post(BaseModel):
     file_id: int
     preview_id: int
     title: str | None = Field(default=None, min_length=1, max_length=100)
+    created_at: datetime
 
 
 class Posts(BaseModel):

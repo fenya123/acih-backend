@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Self
 from uuid import UUID
 
@@ -25,6 +26,7 @@ class Session(BaseModel):
     id: UUID  # noqa: A003
 
     account_id: int
+    created_at: datetime
 
 
 class SessionWithToken(BaseModel):

@@ -5,9 +5,10 @@ from __future__ import annotations
 import hashlib
 import typing
 import uuid
+from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import delete, Enum, ForeignKey, func, Integer, select, String
+from sqlalchemy import DateTime, delete, Enum, ForeignKey, func, Integer, select, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 
 from src.account.enums import Algorithm
@@ -20,6 +21,7 @@ from src.post.schemas import Post as PostSchema
 from src.post.schemas import PostContent
 from src.profile.models import Profile
 from src.shared.database import Base
+from src.shared.datetime import utcnow
 from src.shared.exceptions import NotFoundException
 
 
@@ -35,6 +37,7 @@ class Account(Base):
     id: Mapped[int] = mapped_column(Integer(), primary_key=True)  # noqa: A003
 
     email: Mapped[str] = mapped_column(String(200), nullable=False, unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     password_hash: Mapped["PasswordHash"] = relationship(uselist=False, back_populates="account")  # noqa: UP037
     profile: Mapped["Profile"] = relationship(uselist=False, back_populates="account")  # noqa: UP037
@@ -51,7 +54,7 @@ class Account(Base):
         """Create new account, profile and password hash, return account object."""
         new_account = Account.new_object(db, email)
         PasswordHash.new_object(db, password, new_account.id)
-        Profile.new_object(db, username, new_account.id)
+        Profile.new_object(db, username, new_account.id, new_account.created_at)
         return new_account
 
     @classmethod

@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
-from sqlalchemy import ForeignKey, Integer, String
+from datetime import datetime
+
+from sqlalchemy import DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, Session
 
 from src.post.schemas import PostContent
 from src.shared.database import Base
+from src.shared.datetime import utcnow
 
 
 class Post(Base):  # pylint: disable=too-few-public-methods
@@ -21,6 +24,7 @@ class Post(Base):  # pylint: disable=too-few-public-methods
     file_id: Mapped[int] = mapped_column(ForeignKey("file.id"), nullable=False, unique=True)
     preview_id: Mapped[int] = mapped_column(ForeignKey("file.id"), nullable=False, unique=True)
     title: Mapped[str | None] = mapped_column(String(100), nullable=True, unique=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     @classmethod
     def new_object(

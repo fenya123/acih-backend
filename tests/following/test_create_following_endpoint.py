@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from sqlalchemy import select
 
 from src.following.models import Following
@@ -10,6 +12,7 @@ from src.following.models import Following
 def test_create_following_returns_201_with_correct_response(
     client, db_with_two_accounts_one_session, token_for_testing,
 ):
+    session = db_with_two_accounts_one_session
     headers = {"Authorization": f"Bearer {token_for_testing}"}
     json = {
         "follower_id": 1,
@@ -19,10 +22,12 @@ def test_create_following_returns_201_with_correct_response(
     response = client.post("/followings", headers=headers, json=json)
 
     assert response.status_code == 201
+    following = session.query(Following).one()
     assert response.json() == {
         "id": 10000,
         "follower_id": 1,
         "followee_id": 2,
+        "created_at": following.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
     }
 
 
@@ -67,6 +72,7 @@ def test_create_following_creates_correct_db_entry(
     following = session.execute(select(Following).where(Following.id == 10000)).one().Following
     assert following.follower_id == 1
     assert following.followee_id == 2
+    assert isinstance(following.created_at, datetime)
 
 
 def test_create_following_returns_403_with_correct_response_when_follower_id_does_not_coincide_with_token_account(

@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import hashlib
+from datetime import datetime
 
 from src.account.enums import Algorithm
 from src.account.models import Account, PasswordHash
 from src.profile.models import Profile
 
 
-def test_create_account_returns_201_with_correct_response(client):
+def test_create_account_returns_201_with_correct_response(client, db_empty):
+    session = db_empty
     data = {
         "email": "Placeholder_AdDrEsS_for_test_123@gmail.com",
         "password": "Placeholder!Password?11233)_",
@@ -19,10 +21,12 @@ def test_create_account_returns_201_with_correct_response(client):
     response = client.post("/accounts", json=data)
 
     assert response.status_code == 201
+    account = session.query(Account).one()
     assert response.json() == {
         "account": {
             "id": 10000,
             "email": "Placeholder_AdDrEsS_for_test_123@gmail.com",
+            "created_at": account.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         },
         "profile": {
             "account_id": 10000,
@@ -31,6 +35,7 @@ def test_create_account_returns_201_with_correct_response(client):
             "description": None,
             "info": None,
             "username": "testname123",
+            "created_at": account.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         },
     }
 
@@ -46,8 +51,12 @@ def test_create_account_adds_correct_data_to_db(client, db_empty):
     response = client.post("/accounts", json=data)
 
     assert response.status_code == 201
-    assert len(session.query(Account).where(Account.email == "Placeholder_AdDrEsS_for_test_123@gmail.com").all()) == 1
-    assert len(session.query(Profile).where(Profile.username == "testname123").all()) == 1
+    account = session.query(Account).one()
+    assert account.email == "Placeholder_AdDrEsS_for_test_123@gmail.com"
+    assert isinstance(account.created_at, datetime)
+    profile = session.query(Profile).one()
+    assert profile.account_id == account.id
+    assert isinstance(profile.created_at, datetime)
     assert len(session.query(PasswordHash).all()) == 1
     password_hash = session.query(PasswordHash).one()
     hash_object = hashlib.new(Algorithm.SHA256.value)

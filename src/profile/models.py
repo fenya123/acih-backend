@@ -3,13 +3,15 @@
 from __future__ import annotations
 
 import typing
+from datetime import datetime
 from typing import Self
 
-from sqlalchemy import ForeignKey, select, String, update
+from sqlalchemy import DateTime, ForeignKey, select, String, update
 from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 
 from src.profile.schemas import ProfileData
 from src.shared.database import Base
+from src.shared.datetime import utcnow
 
 
 class Profile(Base):
@@ -24,13 +26,14 @@ class Profile(Base):
     description: Mapped[str | None] = mapped_column(String(1000), nullable=True)
     info: Mapped[str | None] = mapped_column(String(100), nullable=True)
     username: Mapped[str] = mapped_column(String(30), nullable=False, unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     account: Mapped["Account"] = relationship(back_populates="profile")  # type: ignore[name-defined]  # noqa: F821,UP037,E501
 
     @classmethod
-    def new_object(cls: type[Profile], db: Session, username: str, account_id: int) -> Profile:
+    def new_object(cls: type[Profile], db: Session, username: str, account_id: int, created_at: datetime) -> Profile:
         """Create new Profile object."""
-        new_profile = Profile(username=username, account_id=account_id)
+        new_profile = Profile(username=username, account_id=account_id, created_at=created_at)
         db.add(new_profile)
         db.flush()
         return new_profile

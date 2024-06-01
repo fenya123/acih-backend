@@ -5,9 +5,11 @@ from __future__ import annotations
 from sqlalchemy import select
 
 from src.account.models import Account
+from src.profile.models import Profile
 
 
 def test_update_profile_returns_200_with_correct_response(client, db_with_one_account_and_two_files, token_for_testing):
+    session = db_with_one_account_and_two_files
     json = {
         "avatar_id": 1,
         "background_id": 2,
@@ -20,6 +22,7 @@ def test_update_profile_returns_200_with_correct_response(client, db_with_one_ac
     response = client.put("/accounts/1/profile", json=json, headers=headers)
 
     assert response.status_code == 200
+    profile = session.query(Profile).one()
     assert response.json() == {
         "account_id": 1,
         "avatar_id": 1,
@@ -27,6 +30,7 @@ def test_update_profile_returns_200_with_correct_response(client, db_with_one_ac
         "description": "test",
         "info": "test",
         "username": "test_test",
+        "created_at": profile.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
     }
 
 

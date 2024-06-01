@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime
+
 from pydantic import BaseModel, Field
 
 from src.profile.schemas import Profile
@@ -21,6 +23,7 @@ class Account(BaseModel):
     id: int  # noqa: A003
 
     email: str = Field(min_length=5, max_length=200, pattern=r".+@.+\..+", examples=["test_eMaiL_2024@gmail.com"])
+    created_at: datetime
 
 
 class Accounts(BaseModel):

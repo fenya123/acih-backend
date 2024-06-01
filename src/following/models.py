@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
-from sqlalchemy import CheckConstraint, ForeignKey, UniqueConstraint
+from datetime import datetime
+
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, Session
 
 from src.shared.database import Base
+from src.shared.datetime import utcnow
 
 
 class Following(Base):  # pylint: disable=too-few-public-methods
@@ -17,6 +20,7 @@ class Following(Base):  # pylint: disable=too-few-public-methods
 
     follower_id: Mapped[int] = mapped_column(ForeignKey("account.id"), nullable=False, unique=False)
     followee_id: Mapped[int] = mapped_column(ForeignKey("account.id"), nullable=False, unique=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, nullable=False)
 
     __table_args__ = (
         CheckConstraint("follower_id != followee_id", name="check_following_self"),
