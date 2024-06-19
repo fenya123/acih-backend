@@ -5,10 +5,12 @@ from __future__ import annotations
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Path, Query, status
-from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.dependencies import get_token
+from src.auth.schemas import TokenPayload
+from src.feed import controllers
 from src.post.schemas import Posts
+from src.shared.database import Db
 
 
 router = APIRouter(tags=["feed"])
@@ -25,28 +27,39 @@ router = APIRouter(tags=["feed"])
     status_code=status.HTTP_200_OK,
 )
 def get_followed_posts_feed(
-    account_id: Annotated[int, Path()],  # noqa: ARG001
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    limit: Annotated[int, Query()],  # noqa: ARG001
-    offset: Annotated[int, Query()],  # noqa: ARG001
-) -> None:
+    db: Db,
+    account_id: Annotated[int, Path()],
+    token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
+    limit: Annotated[int, Query()],
+    offset: Annotated[int, Query()],
+) -> Posts:
     """Get followed posts for an account."""
+    return controllers.get_followed_posts_feed(
+        db=db,
+        account_id=account_id,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.get(
-    "/feed/accounts/{account_id}/posts/suggested",
+    "/feed/posts/suggested",
     responses={
         status.HTTP_401_UNAUTHORIZED: {},
         status.HTTP_403_FORBIDDEN: {},
-        status.HTTP_404_NOT_FOUND: {},
     },
     response_model=Posts,
     status_code=status.HTTP_200_OK,
 )
 def get_suggested_posts_feed(
-    account_id: Annotated[int, Path()],  # noqa: ARG001
-    authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
-    limit: Annotated[int, Query()],  # noqa: ARG001
-    offset: Annotated[int, Query()],  # noqa: ARG001
-) -> None:
-    """Get suggested posts for an account."""
+    db: Db,
+    token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
+    limit: Annotated[int, Query()],
+    offset: Annotated[int, Query()],
+) -> Posts:
+    """Get suggested posts."""
+    return controllers.get_suggested_posts_feed(
+        db=db,
+        limit=limit,
+        offset=offset,
+    )

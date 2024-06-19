@@ -52,6 +52,7 @@ optional = true
 dirty-equals = "0.7.1.post0"
 pytest = "7.3.2"
 pytest-cov = "4.1.0"
+pytest-freezegun = "0.4.2"
 pytest-env = "1.0.1"
 
 

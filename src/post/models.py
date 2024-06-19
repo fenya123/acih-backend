@@ -2,17 +2,18 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String
+from sqlalchemy import DateTime, desc, ForeignKey, func, Integer, select, String
 from sqlalchemy.orm import Mapped, mapped_column, Session
 
+from src.post.schemas import Post as PostSchema
 from src.post.schemas import PostContent
 from src.shared.database import Base
 from src.shared.datetime import utcnow
 
 
-class Post(Base):  # pylint: disable=too-few-public-methods
+class Post(Base):
     """ORM model of 'post' table."""
 
     __tablename__ = "post"
@@ -46,3 +47,32 @@ class Post(Base):  # pylint: disable=too-few-public-methods
         db.add(post)
         db.flush()
         return post
+
+    @classmethod
+    def get_suggested_posts(cls: type[Post], db: Session, limit: int, offset: int) -> list[PostSchema]:
+        """Get suggested posts for an account."""
+        row_num_subquery = (
+            select(
+                Post.id.label("post_id"),
+                func.row_number()
+                .over(partition_by=Post.account_id, order_by=desc(Post.created_at))  # type: ignore[no-untyped-call]
+                .label("row_num"),
+            )
+            .select_from(Post)
+            .where(datetime.now(tz=timezone.utc) - (Post.created_at) <= timedelta(days=7))
+            .subquery()
+        )
+
+        query = (
+            select(
+                Post,
+            )
+            .select_from(Post)
+            .join(row_num_subquery, Post.id == row_num_subquery.c.post_id)
+            .where(row_num_subquery.c.row_num <= 3)  # noqa: PLR2004
+            .order_by(Post.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        rows = db.execute(query).all()
+        return [PostSchema.model_validate(row.Post, from_attributes=True) for row in rows]

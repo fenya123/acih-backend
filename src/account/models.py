@@ -5,10 +5,10 @@ from __future__ import annotations
 import hashlib
 import typing
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, delete, Enum, ForeignKey, func, Integer, select, String
+from sqlalchemy import DateTime, delete, desc, Enum, ForeignKey, func, Integer, select, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 
 from src.account.enums import Algorithm
@@ -196,6 +196,35 @@ class Account(Base):
             .limit(limit)
         )
         rows = db.execute(query)
+        return [PostSchema.model_validate(row.Post, from_attributes=True) for row in rows]
+
+    def get_followed_posts(self: Self, db: Session, limit: int, offset: int) -> list[PostSchema]:
+        """Get followed posts for an account."""
+        row_num_subquery = (
+            select(
+                Post.id.label("post_id"),
+                func.row_number()
+                .over(partition_by=Post.account_id, order_by=desc(Post.created_at))  # type: ignore[no-untyped-call]
+                .label("row_num"),
+            )
+            .select_from(Post)
+            .where(datetime.now(tz=timezone.utc) - (Post.created_at) <= timedelta(hours=24))
+            .subquery()
+        )
+
+        query = (
+            select(
+                Post,
+            )
+            .select_from(Post)
+            .join(Following, Post.account_id == Following.followee_id)
+            .join(row_num_subquery, Post.id == row_num_subquery.c.post_id)
+            .where(Following.follower_id == self.id, row_num_subquery.c.row_num <= 3)  # noqa: PLR2004
+            .order_by(Post.created_at.desc())
+            .limit(limit)
+            .offset(offset)
+        )
+        rows = db.execute(query).all()
         return [PostSchema.model_validate(row.Post, from_attributes=True) for row in rows]
 
     def has_followee(self: Self, db: Session, followee_id: int) -> bool:
