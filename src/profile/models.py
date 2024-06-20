@@ -6,9 +6,10 @@ import typing
 from datetime import datetime
 from typing import Self
 
-from sqlalchemy import DateTime, ForeignKey, select, String, update
+from sqlalchemy import DateTime, ForeignKey, func, select, String, update
 from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 
+from src.profile.schemas import Profile as ProfileSchema
 from src.profile.schemas import ProfileData
 from src.shared.database import Base
 from src.shared.datetime import utcnow
@@ -52,6 +53,26 @@ class Profile(Base):
         row = db.execute(query).one_or_none()
 
         return row is not None
+
+    @classmethod
+    def search_profiles(
+        cls: type[Profile],
+        db: Session,
+        profile_username: str,
+        limit: int,
+        offset: int,
+    ) -> list[ProfileSchema]:
+        """Get profiles search result."""
+        query = (
+            select(Profile)
+            .where(Profile.username.like(f"%{profile_username}%"))
+            .order_by(func.char_length(Profile.username))  # pylint: disable=not-callable
+            .limit(limit)
+            .offset(offset)
+        )
+
+        rows = db.execute(query).all()
+        return [ProfileSchema.model_validate(row.Profile, from_attributes=True) for row in rows]
 
     def update(self: Self, profile_data: ProfileData, db: Session) -> None:
         """Update profile's database object."""

@@ -671,3 +671,41 @@ def db_with_three_accounts_several_posts_two_followings(db_with_two_accounts_sev
 
     session.commit()
     return session
+
+
+@pytest.fixture
+def db_with_three_accounts(db_empty):
+    """Database with three accounts and profiles."""
+    session = db_empty
+    session.add_all([
+        Account(id=1, email="test1@gmail.com"),
+        Account(id=2, email="test2@gmail.com"),
+        Account(id=3, email="test3@gmail.com"),
+    ])
+    session.flush()
+
+    salt = "e570d2d0-0515-49ee-9f08-68f34026028c"
+    salted_password = "testpassword" + salt
+    hash_object = hashlib.new(Algorithm.SHA256.value)
+    hash_object.update(salted_password.encode("ascii"))
+    session.add_all([
+        PasswordHash(account_id=1, algorithm=Algorithm.SHA256, salt=UUID(salt), value=hash_object.hexdigest()),
+        PasswordHash(account_id=2, algorithm=Algorithm.SHA256, salt=UUID(salt), value=hash_object.hexdigest()),
+        PasswordHash(account_id=3, algorithm=Algorithm.SHA256, salt=UUID(salt), value=hash_object.hexdigest()),
+    ])
+    session.flush()
+
+    session.add_all([
+        Profile(account_id=1, username="test1"),
+        Profile(account_id=2, username="test12"),
+        Profile(account_id=3, username="test123"),
+    ])
+    session.flush()
+
+    test_session = Session(
+        id=UUID("441d78c0-c031-4fa6-9f2a-78200da5c0fe"),
+        account_id=1,
+    )
+    session.add(test_session)
+    session.commit()
+    return session
