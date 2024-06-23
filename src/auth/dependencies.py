@@ -15,7 +15,7 @@ from src.shared.database import Db  # noqa: TCH001
 from src.shared.exceptions import NotFoundException
 
 
-bearer = HTTPBearer()
+bearer = HTTPBearer(description="JWT access token.")
 
 
 def get_token(

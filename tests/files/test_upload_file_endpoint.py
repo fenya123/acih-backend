@@ -104,7 +104,6 @@ def test_upload_file_without_extension_returns_415_with_correct_response(
 
     assert response.status_code == 415
     assert response.json() == {
-        "resource": "File",
         "description": "No file extension.",
         "detail": "File does not contain an extension.",
     }
@@ -122,7 +121,6 @@ def test_upload_file_without_mime_type_returns_415_with_correct_response(
 
     assert response.status_code == 415
     assert response.json() == {
-        "resource": "File",
         "description": "No mime type specified.",
         "detail": "Request payload does not have a mime type specified.",
     }

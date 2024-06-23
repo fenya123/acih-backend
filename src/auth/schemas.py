@@ -7,7 +7,7 @@ from typing import Self
 from uuid import UUID
 
 import jwt
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.auth.enums import Algorithm
 from src.config import config
@@ -16,8 +16,8 @@ from src.config import config
 class Credentials(BaseModel):
     """Credentials schema."""
 
-    email: str
-    password: str
+    email: str = Field(examples=["test_eMaiL_2024@gmail.com"])
+    password: str = Field(examples=["Placeholder!Password@For-Swagger?UI"])
 
 
 class Session(BaseModel):

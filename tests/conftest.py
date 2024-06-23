@@ -19,7 +19,6 @@ from src.app import app
 from src.auth.models import Session
 from src.auth.schemas import Algorithm as AuthAlgorithm
 from src.config import config
-from src.entity.models import Entity
 from src.files.enums import Extension, MimeType
 from src.files.models import File
 from src.following.models import Following
@@ -246,16 +245,6 @@ def token_with_false_secret_key():
         "session_id": "441d78c0-c031-4fa6-9f2a-78200da5c0fe",
     }
     return jwt.encode(payload, "false_secret", AuthAlgorithm.HS256.value)
-
-
-@pytest.fixture
-def db_with_one_entity(db_empty):
-    """Create database with one Entity."""
-    session = db_empty
-    new_entity = Entity(id=1)
-    session.add(new_entity)
-    session.commit()
-    return session
 
 
 @pytest.fixture

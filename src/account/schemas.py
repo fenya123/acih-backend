@@ -14,7 +14,7 @@ class NewAccount(BaseModel):
 
     email: str = Field(min_length=5, max_length=200, pattern=r".+@.+\..+", examples=["test_eMaiL_2024@gmail.com"])
     password: str = Field(min_length=8, max_length=500, examples=["Placeholder!Password@For-Swagger?UI"])
-    username: str = Field(min_length=1, max_length=30, pattern=r"[a-z][a-z0-9_]*")
+    username: str = Field(min_length=1, max_length=30, pattern=r"[a-z][a-z0-9_]*", examples=["bob1997"])
 
 
 class Account(BaseModel):

@@ -1,7 +1,7 @@
 """create account profile password hash tables
 
 Revision ID: be560fc34518
-Revises: 18d944595504
+Revises:
 Create Date: 2024-01-27 12:39:56.348778+00:00
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'be560fc34518'
-down_revision: Union[str, None] = '18d944595504'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

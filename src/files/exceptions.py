@@ -20,8 +20,6 @@ class FileNotFoundException(NotFoundException):
 class NoExtensionException(UnsupportedTypeException):
     """No extension exception."""
 
-    resource: str = "File"
-
     description = "No file extension."
     detail = "File does not contain an extension."
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
@@ -30,8 +28,6 @@ class NoExtensionException(UnsupportedTypeException):
 class NoMimeTypeException(UnsupportedTypeException):
     """No mime type exception."""
 
-    resource: str = "File"
-
     description = "No mime type specified."
     detail = "Request payload does not have a mime type specified."
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
@@ -39,8 +35,6 @@ class NoMimeTypeException(UnsupportedTypeException):
 
 class FileTooLargeException(EntityTooLargeException):
     """File too large exception."""
-
-    resource: str = "File"
 
     description = "Request payload is too large."
     detail = "Request payload is too large, and cannot be handled."

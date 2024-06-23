@@ -44,8 +44,6 @@ class NotFoundException(HTTPException):
 class EntityTooLargeException(HTTPException):
     """Exception for 413 REQUEST ENTITY TOO LARGE error."""
 
-    resource: str
-
     description = "Request payload is too large."
     detail = "Request payload is too large, and cannot be handled."
     status_code = status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
@@ -53,8 +51,6 @@ class EntityTooLargeException(HTTPException):
 
 class UnsupportedTypeException(HTTPException):
     """Exception for 415 UNSUPPORTED MEDIA TYPE error."""
-
-    resource: str
 
     description = "Request payload type is not supported."
     detail = "Request payload type is not supported, and cannot be handled."

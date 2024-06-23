@@ -13,10 +13,12 @@ class Post(BaseModel):
     id: int  # noqa: A003
 
     account_id: int
-    description: str | None = Field(default=None, min_length=1, max_length=1000)
+    description: str | None = Field(default=None, min_length=1, max_length=1000,
+                                    examples=["What a day to be able to read! 8-)"])
     file_id: int
     preview_id: int
-    title: str | None = Field(default=None, min_length=1, max_length=100)
+    title: str | None = Field(default=None, min_length=1, max_length=100,
+                              examples=["What does a book have in common with a crab?"])
     created_at: datetime
 
 
@@ -29,9 +31,11 @@ class Posts(BaseModel):
 class PostContent(BaseModel):
     """Post content schema."""
 
-    description: str | None = Field(default=None, min_length=1, max_length=1000)
+    description: str | None = Field(default=None, min_length=1, max_length=1000,
+                                    examples=["What a day to be able to read! 8-)"])
     file_id: int
-    title: str | None = Field(default=None, min_length=1, max_length=100)
+    title: str | None = Field(default=None, min_length=1, max_length=100,
+                              examples=["What does a book have in common with a crab?"])
 
 
 class PostsCount(BaseModel):

@@ -15,6 +15,7 @@ from src.files.dependencies import get_tmp_dir
 from src.post import controllers
 from src.post.schemas import Post, PostContent, Posts, PostsCounts
 from src.shared.database import Db
+from src.shared.swagger import responses
 
 
 router = APIRouter(tags=["post"])
@@ -23,8 +24,9 @@ router = APIRouter(tags=["post"])
 @router.post(
     "/posts",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_403_FORBIDDEN: {},
+        status.HTTP_201_CREATED: {"description": "New post is created, post info is returned."},
+        status.HTTP_401_UNAUTHORIZED: responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_403_FORBIDDEN: responses[status.HTTP_403_FORBIDDEN],
     },
     response_model=Post,
     status_code=status.HTTP_201_CREATED,
@@ -49,18 +51,19 @@ def create_post(
 @router.get(
     "/accounts/{account_id}/posts/{post_id}",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_403_FORBIDDEN: {},
-        status.HTTP_404_NOT_FOUND: {},
+        status.HTTP_200_OK: {"description": "A post's info is returned."},
+        status.HTTP_401_UNAUTHORIZED: responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_403_FORBIDDEN: responses[status.HTTP_403_FORBIDDEN],
+        status.HTTP_404_NOT_FOUND: responses[status.HTTP_404_NOT_FOUND],
     },
     response_model=Post,
     status_code=status.HTTP_200_OK,
 )
 def get_post(
     db: Db,
-    account_id: Annotated[int, Path()],
+    account_id: Annotated[int, Path(example=42)],
     token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
-    post_id: Annotated[int, Path()],
+    post_id: Annotated[int, Path(example=24)],
 ) -> Post:
     """Get an account's post."""
     return controllers.get_post(
@@ -73,19 +76,20 @@ def get_post(
 @router.get(
     "/accounts/{account_id}/posts",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_403_FORBIDDEN: {},
-        status.HTTP_404_NOT_FOUND: {},
+        status.HTTP_200_OK: {"description": "List of posts of an account is returned."},
+        status.HTTP_401_UNAUTHORIZED: responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_403_FORBIDDEN: responses[status.HTTP_403_FORBIDDEN],
+        status.HTTP_404_NOT_FOUND: responses[status.HTTP_404_NOT_FOUND],
     },
     response_model=Posts,
     status_code=status.HTTP_200_OK,
 )
 def get_posts(
     db: Db,
-    account_id: Annotated[int, Path()],
+    account_id: Annotated[int, Path(example=42)],
     token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
-    limit: Annotated[int, Query()],
-    offset: Annotated[int, Query()],
+    limit: Annotated[int, Query(example=5)],
+    offset: Annotated[int, Query(example=5)],
 ) -> Posts:
     """Get a list of an account's posts."""
     return controllers.get_posts(
@@ -99,15 +103,16 @@ def get_posts(
 @router.get(
     "/posts/counts",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_403_FORBIDDEN: {},
+        status.HTTP_200_OK: {"description": "Return number of posts for each account."},
+        status.HTTP_401_UNAUTHORIZED: responses[status.HTTP_401_UNAUTHORIZED],
+        status.HTTP_403_FORBIDDEN: responses[status.HTTP_403_FORBIDDEN],
     },
     response_model=PostsCounts,
     status_code=status.HTTP_200_OK,
 )
 def get_posts_counts(
     db: Db,
-    account_ids: Annotated[list[int], Query(alias="account_id")],
+    account_ids: Annotated[list[int], Query(alias="account_id", example=[42, 24])],
     authorization: Annotated[HTTPAuthorizationCredentials, Depends(get_token)],  # noqa: ARG001
 ) -> PostsCounts:
     """Get posts counts."""
