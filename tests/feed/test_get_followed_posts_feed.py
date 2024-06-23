@@ -15,7 +15,7 @@ def test_get_followed_posts_feed_returns_200_with_correct_response(
 
     assert response.status_code == 200
     assert response.json() == {
-        "posts": [
+        'posts': [
             {
                 "id": 7,
                 "account_id": 2,

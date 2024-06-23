@@ -709,3 +709,182 @@ def db_with_three_accounts(db_empty):
     session.add(test_session)
     session.commit()
     return session
+
+
+@pytest.fixture
+def db_with_three_accounts_several_posts_two_followings(db_with_two_accounts_several_posts):
+    """Database with three accounts with at least one post and one session, the third following the others."""
+    session = db_with_two_accounts_several_posts
+    test_account = Account(
+        id=3,
+        email="test03@gmail.com",
+    )
+    session.add(test_account)
+    session.flush()
+
+    session.add_all([
+        Following(id=1, follower_id=3, followee_id=1),
+        Following(id=2, follower_id=3, followee_id=2),
+    ])
+    session.flush()
+
+    session.add_all([
+        File(
+            id=7,
+            extension=Extension.JPG,
+            filename="testjpg4.jpg",
+            mime_type=MimeType.IMAGE_JPEG,
+            size=15,
+        ),
+        File(
+            id=8,
+            extension=Extension.PNG,
+            filename="testjpg4-preview.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=15,
+        ),
+        File(
+            id=9,
+            extension=Extension.JPG,
+            filename="testjpg5.jpg",
+            mime_type=MimeType.IMAGE_JPEG,
+            size=15,
+        ),
+        File(
+            id=10,
+            extension=Extension.PNG,
+            filename="testjpg5-preview.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=15,
+        ),
+        File(
+            id=11,
+            extension=Extension.JPG,
+            filename="testjpg6.jpg",
+            mime_type=MimeType.IMAGE_JPEG,
+            size=15,
+        ),
+        File(
+            id=12,
+            extension=Extension.PNG,
+            filename="testjpg6-preview.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=15,
+        ),
+        File(
+            id=13,
+            extension=Extension.JPG,
+            filename="testjpg7.jpg",
+            mime_type=MimeType.IMAGE_JPEG,
+            size=15,
+        ),
+        File(
+            id=14,
+            extension=Extension.PNG,
+            filename="testjpg7-preview.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=15,
+        ),
+        File(
+            id=15,
+            extension=Extension.JPG,
+            filename="testjpg8.jpg",
+            mime_type=MimeType.IMAGE_JPEG,
+            size=15,
+        ),
+        File(
+            id=16,
+            extension=Extension.PNG,
+            filename="testjpg8-preview.png",
+            mime_type=MimeType.IMAGE_PNG,
+            size=15,
+        ),
+    ])
+
+    session.flush()
+
+    session.add(
+        Post(
+            id=4,
+            account_id=1,
+            description="test post 4",
+            file_id=7,
+            preview_id=8,
+            title="test post 4",
+            created_at=datetime.strptime('2024-06-09T14:32:36.574049Z', "%Y-%m-%dT%H:%M:%S.%fZ"),
+        ),
+    )
+    session.flush()
+
+    session.add(
+        Post(
+            id=5,
+            account_id=2,
+            description="test post 5",
+            file_id=9,
+            preview_id=10,
+            title="test post 5",
+            created_at=datetime.strptime("2024-06-09T14:32:36.575049Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+            .replace(tzinfo=timezone.utc),
+        ),
+    )
+    session.flush()
+
+    session.add(
+        Post(
+            id=6,
+            account_id=1,
+            description="test post 6",
+            file_id=11,
+            preview_id=12,
+            title="test post 6",
+            created_at=datetime.strptime("2024-06-09T14:32:36.576049Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+            .replace(tzinfo=timezone.utc),
+        ),
+    )
+    session.flush()
+
+    session.add(
+        Post(
+            id=7,
+            account_id=2,
+            description="test post 7",
+            file_id=13,
+            preview_id=14,
+            title="test post 7",
+            created_at=datetime.strptime("2024-06-09T14:32:36.577049Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+            .replace(tzinfo=timezone.utc),
+        ),
+    )
+    session.flush()
+
+    session.add(
+        Post(
+            id=8,
+            account_id=2,
+            description="test post 8",
+            file_id=15,
+            preview_id=16,
+            title="test post 8",
+            created_at=datetime.strptime("2024-06-09T14:32:36.578049Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+            .replace(tzinfo=timezone.utc),
+        ),
+    )
+    session.flush()
+
+    session.add(
+        Post(
+            id=9,
+            account_id=3,
+            description="test post 9",
+            file_id=17,
+            preview_id=18,
+            title="test post 9",
+            created_at=datetime.strptime("2024-06-09T14:32:36.578049Z", "%Y-%m-%dT%H:%M:%S.%fZ")
+            .replace(tzinfo=timezone.utc),
+        ),
+    )
+    session.flush()
+
+    session.commit()
+    return session
