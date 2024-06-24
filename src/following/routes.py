@@ -11,6 +11,7 @@ from src.auth.schemas import TokenPayload
 from src.following import controllers
 from src.following.schemas import Followees, Followers, Following, FollowingCounts, NewFollowing
 from src.shared.database import Db
+from src.shared.swagga import Description
 
 
 router = APIRouter(tags=["following"])
@@ -19,9 +20,10 @@ router = APIRouter(tags=["following"])
 @router.post(
     "/followings",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_403_FORBIDDEN: {},
-        status.HTTP_404_NOT_FOUND: {},
+        status.HTTP_201_CREATED: {"description": "Following object's info is returned."},
+        status.HTTP_401_UNAUTHORIZED: {"description": Description.HTTP_401},
+        status.HTTP_403_FORBIDDEN: {"description": Description.HTTP_403},
+        status.HTTP_404_NOT_FOUND: {"description": Description.HTTP_404},
     },
     response_model=Following,
     status_code=status.HTTP_201_CREATED,
@@ -38,13 +40,14 @@ def create_following(
 @router.get(
     "/following/counts",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {},
+        status.HTTP_200_OK: {"description": "Returns number of followers/followees for each account."},
+        status.HTTP_401_UNAUTHORIZED: {"description": Description.HTTP_401},
     },
     response_model=FollowingCounts,
     status_code=status.HTTP_200_OK,
 )
 def get_following_counts(
-    account_ids: Annotated[list[int], Query(alias="account_id")],
+    account_ids: Annotated[list[int], Query(alias="account_id", example=[42, 24])],
     db: Db,
     token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
 ) -> FollowingCounts:
@@ -55,18 +58,19 @@ def get_following_counts(
 @router.get(
     "/accounts/{account_id}/followers",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_404_NOT_FOUND: {},
+        status.HTTP_200_OK: {"description": "Returns list of accounts that follow an account."},
+        status.HTTP_401_UNAUTHORIZED: {"description": Description.HTTP_401},
+        status.HTTP_404_NOT_FOUND: {"description": Description.HTTP_404},
     },
     response_model=Followers,
     status_code=status.HTTP_200_OK,
 )
 def get_followers(
-    account_id: Annotated[int, Path()],
+    account_id: Annotated[int, Path(example=42)],
     db: Db,
     token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
-    limit: Annotated[int, Query()],
-    offset: Annotated[int, Query()],
+    limit: Annotated[int, Query(example=5)],
+    offset: Annotated[int, Query(example=5)],
 ) -> Followers:
     """Get a list of an account's followers."""
     return controllers.get_followers(db, account_id, limit, offset)
@@ -75,18 +79,19 @@ def get_followers(
 @router.get(
     "/accounts/{account_id}/followees",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_404_NOT_FOUND: {},
+        status.HTTP_200_OK: {"description": "Returns a list of accounts that an account follows."},
+        status.HTTP_401_UNAUTHORIZED: {"description": Description.HTTP_401},
+        status.HTTP_404_NOT_FOUND: {"description": Description.HTTP_404},
     },
     response_model=Followees,
     status_code=status.HTTP_200_OK,
 )
 def get_followees(
-    account_id: Annotated[int, Path()],
+    account_id: Annotated[int, Path(example=42)],
     db: Db,
     token: Annotated[TokenPayload, Depends(get_token)],  # noqa: ARG001
-    limit: Annotated[int, Query()],
-    offset: Annotated[int, Query()],
+    limit: Annotated[int, Query(example=5)],
+    offset: Annotated[int, Query(example=5)],
 ) -> Followees:
     """Get a list of an account's followees."""
     return controllers.get_followees(db, account_id, limit, offset)
@@ -95,18 +100,19 @@ def get_followees(
 @router.delete(
     "/accounts/{account_id}/followees/{followee_id}",
     responses={
-        status.HTTP_401_UNAUTHORIZED: {},
-        status.HTTP_403_FORBIDDEN: {},
-        status.HTTP_404_NOT_FOUND: {},
+        status.HTTP_204_NO_CONTENT: {"description": "Following relationship is removed."},
+        status.HTTP_401_UNAUTHORIZED: {"description": Description.HTTP_401},
+        status.HTTP_403_FORBIDDEN: {"description": Description.HTTP_403},
+        status.HTTP_404_NOT_FOUND: {"description": Description.HTTP_404},
     },
     response_model=None,
     status_code=status.HTTP_204_NO_CONTENT,
 )
 def remove_followee(
-    account_id: Annotated[int, Path()],
+    account_id: Annotated[int, Path(example=42)],
     db: Db,
     token: Annotated[TokenPayload, Depends(get_token)],
-    followee_id: Annotated[int, Path()],
+    followee_id: Annotated[int, Path(example=42)],
 ) -> None:
     """Remove a followee."""
     return controllers.remove_followee(db, token, account_id, followee_id)
