@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from fastapi import HTTPException, status
-
 from src.account.models import Account
+from src.auth.exceptions import SessionRemovalException
 from src.auth.models import Session as SessionModel
 from src.auth.schemas import Session as SessionSchema
 from src.auth.schemas import SessionWithToken, TokenPayload
@@ -35,7 +34,7 @@ def create_session(credentials: Credentials, db: Session) -> SessionWithToken:
 def remove_session(account_id: int, token: TokenPayload, db: Session, session_id: UUID) -> None:
     """Remove session."""
     if token.account_id != account_id or token.session_id != session_id:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "No rights to perform that action")
+        raise SessionRemovalException
 
     session = SessionModel.get(db, session_id)
     session.remove(db)

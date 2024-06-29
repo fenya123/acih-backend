@@ -19,7 +19,10 @@ def test_remove_session_returns_401_with_correct_body_when_token_has_invalid_sig
     response = client.delete("/accounts/1/sessions/441d78c0-c031-4fa6-9f2a-78200da5c0fe", headers=headers)
 
     assert response.status_code == 401
-    assert response.json() == {"detail": "Invalid token."}
+    assert response.json() == {
+        "description": "Request initiator is not authenticated.",
+        "detail": "Your credentials or tokens are invalid or missing.",
+    }
 
 
 def test_remove_session_returns_401_with_correct_body_when_account_from_token_does_not_exist(
@@ -30,7 +33,10 @@ def test_remove_session_returns_401_with_correct_body_when_account_from_token_do
     response = client.delete("/accounts/1/sessions/441d78c0-c031-4fa6-9f2a-78200da5c0fe", headers=headers)
 
     assert response.status_code == 401
-    assert response.json() == {"detail": "Invalid token."}
+    assert response.json() == {
+        "description": "Request initiator is not authenticated.",
+        "detail": "Your credentials or tokens are invalid or missing.",
+    }
 
 
 def test_remove_session_returns_401_with_correct_body_when_account_does_not_have_session_specified(
@@ -41,7 +47,10 @@ def test_remove_session_returns_401_with_correct_body_when_account_does_not_have
     response = client.delete("/accounts/1/sessions/441d78c0-c031-4fa6-9f2a-78200da5c0fe", headers=headers)
 
     assert response.status_code == 401
-    assert response.json() == {"detail": "Invalid token."}
+    assert response.json() == {
+        "description": "Request initiator is not authenticated.",
+        "detail": "Your credentials or tokens are invalid or missing.",
+    }
 
 
 def test_remove_session_returns_403_with_correct_body_when_query_account_does_not_coincide_with_token_account(
@@ -52,7 +61,11 @@ def test_remove_session_returns_403_with_correct_body_when_query_account_does_no
     response = client.delete("/accounts/2/sessions/441d78c0-c031-4fa6-9f2a-78200da5c0fe", headers=headers)
 
     assert response.status_code == 403
-    assert response.json() == {"detail": "No rights to perform that action"}
+    assert response.json() == {
+        "action": "Remove session",
+        "description": "Requested action not allowed.",
+        "detail": "Provided tokens or credentials don't grant you enough access rights.",
+    }
 
 
 def test_remove_session_returns_403_with_correct_body_when_query_session_does_not_coincide_with_token_session(
@@ -63,4 +76,8 @@ def test_remove_session_returns_403_with_correct_body_when_query_session_does_no
     response = client.delete("/accounts/1/sessions/6c0b95da-05e9-4bd5-8580-8695315b6785", headers=headers)
 
     assert response.status_code == 403
-    assert response.json() == {"detail": "No rights to perform that action"}
+    assert response.json() == {
+        "action": "Remove session",
+        "description": "Requested action not allowed.",
+        "detail": "Provided tokens or credentials don't grant you enough access rights.",
+    }

@@ -34,4 +34,8 @@ def test_get_post_returns_404_with_correct_response(
     response = client.get("accounts/1/posts/1", headers=headers)
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Post not found"}
+    assert response.json() == {
+        "resource": "Post",
+        "description": "Requested resource not found.",
+        "detail": "Requested resource doesn't exist or has been deleted.",
+    }

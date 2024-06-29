@@ -12,17 +12,18 @@ from sqlalchemy import DateTime, delete, desc, Enum, ForeignKey, func, Integer, 
 from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 
 from src.account.enums import Algorithm
+from src.account.exceptions import AccountNotFoundException
 from src.auth.models import Session as SessionModel
 from src.auth.schemas import Credentials
 from src.following.models import Following
 from src.following.schemas import Followee, Follower, FollowingCount
+from src.post.exceptions import PostNotFoundException
 from src.post.models import Post
 from src.post.schemas import Post as PostSchema
 from src.post.schemas import PostContent, PostsCount
 from src.profile.models import Profile
 from src.shared.database import Base
 from src.shared.datetime import utcnow
-from src.shared.exceptions import NotFoundException
 
 
 if TYPE_CHECKING:
@@ -71,8 +72,7 @@ class Account(Base):
         query = select(Account).where(Account.id == account_id)
         row = db.execute(query).one_or_none()
         if row is None:
-            msg = "Account not found"
-            raise NotFoundException(msg)
+            raise AccountNotFoundException
         return typing.cast(Account, row.Account)
 
     @classmethod
@@ -82,8 +82,7 @@ class Account(Base):
         row = db.execute(query).one_or_none()
 
         if row is None or not row.Account.password_hash.check(credentials.password):
-            msg = "Account with provided credentials does not exist."
-            raise NotFoundException(msg)
+            raise AccountNotFoundException
 
         return typing.cast(Account, row.Account)
 
@@ -182,8 +181,7 @@ class Account(Base):
         )
         row = db.execute(query).one_or_none()
         if row is None:
-            msg = "Post not found"
-            raise NotFoundException(msg)
+            raise PostNotFoundException
         return PostSchema.model_validate(row.Post, from_attributes=True)
 
     def get_posts(self: Self, db: Session, limit: int, offset: int) -> list[PostSchema]:

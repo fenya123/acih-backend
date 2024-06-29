@@ -103,7 +103,11 @@ def test_upload_file_without_extension_returns_415_with_correct_response(
     response = client.post("/files", files=files, headers=headers)
 
     assert response.status_code == 415
-    assert response.json() == {"detail": "File does not contain an extension."}
+    assert response.json() == {
+        "resource": "File",
+        "description": "No file extension.",
+        "detail": "File does not contain an extension.",
+    }
 
 
 def test_upload_file_without_mime_type_returns_415_with_correct_response(
@@ -117,7 +121,11 @@ def test_upload_file_without_mime_type_returns_415_with_correct_response(
     response = client.post("/files", files=files, headers=headers)
 
     assert response.status_code == 415
-    assert response.json() == {"detail": "Mime type is not defined."}
+    assert response.json() == {
+        "resource": "File",
+        "description": "No mime type specified.",
+        "detail": "Request payload does not have a mime type specified.",
+    }
 
 
 @pytest.mark.skip(reason="We haven't found a way to reproduce large file in test without having 200mb loaded in memory")

@@ -4,9 +4,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from fastapi import HTTPException, status
-
 from src.account.models import Account
+from src.following.exceptions import (
+    FollowingAlreadyExistsException,
+    FollowingNotFoundException,
+    NotOwnedAccountFolloweeException,
+    NotOwnedAccountFollowerException,
+)
 from src.following.schemas import Followees, Followers, FollowingCounts
 from src.following.schemas import Following as FollowingSchema
 
@@ -21,11 +25,11 @@ if TYPE_CHECKING:
 def create_following(db: Session, token: TokenPayload, new_following: NewFollowing) -> FollowingSchema:
     """Create a Following object."""
     if new_following.follower_id != token.account_id:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "No rights to perform that action")
+        raise NotOwnedAccountFollowerException
 
     account = Account.get(db, new_following.followee_id)
     if account.has_follower(db, new_following.follower_id):
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "Already following.")
+        raise FollowingAlreadyExistsException
     following = account.add_follower(db, new_following.follower_id)
 
     return FollowingSchema.model_validate(following, from_attributes=True)
@@ -57,10 +61,10 @@ def get_followees(db: Session, account_id: int, limit: int, offset: int) -> Foll
 def remove_followee(db: Session, token: TokenPayload, account_id: int, followee_id: int) -> None:
     """Remove a followee."""
     if account_id != token.account_id:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "No rights to perform that action.")
+        raise NotOwnedAccountFolloweeException
 
     account = Account.get(db, account_id)
     if not account.has_followee(db, followee_id):
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "No followee with that id.")
+        raise FollowingNotFoundException
 
     account.remove_followee(db, followee_id)

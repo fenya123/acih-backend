@@ -12,9 +12,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.orm import Session as DBSession
 from sqlalchemy.types import UUID
 
+from src.auth.exceptions import SessionNotFoundException
 from src.shared.database import Base
 from src.shared.datetime import utcnow
-from src.shared.exceptions import NotFoundException
 
 
 class Session(Base):
@@ -43,8 +43,7 @@ class Session(Base):
         query = select(Session).where(Session.id == session_id)
         row = db.execute(query).one_or_none()
         if row is None:  # pragma: no cover
-            msg = "Session not found."
-            raise NotFoundException(msg)
+            raise SessionNotFoundException
         return typing.cast(Session, row.Session)
 
     def remove(self: Self, db: DBSession) -> None:

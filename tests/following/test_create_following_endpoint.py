@@ -87,7 +87,11 @@ def test_create_following_returns_403_with_correct_response_when_follower_id_doe
     response = client.post("/followings", headers=headers, json=json)
 
     assert response.status_code == 403
-    assert response.json() == {"detail": "No rights to perform that action"}
+    assert response.json() == {
+        "action": "Create following",
+        "description": "Requested action not allowed.",
+        "detail": "Provided tokens or credentials don't grant you enough access rights.",
+    }
 
 
 def test_create_following_returns_403_with_correct_response_when_following_already_exists(
@@ -102,7 +106,11 @@ def test_create_following_returns_403_with_correct_response_when_following_alrea
     response = client.post("/followings", headers=headers, json=json)
 
     assert response.status_code == 403
-    assert response.json() == {"detail": "Already following."}
+    assert response.json() == {
+        "action": "Create existing following",
+        "description": "Requested action not allowed.",
+        "detail": "Provided tokens or credentials don't grant you enough access rights.",
+    }
 
 
 def test_create_following_returns_404_with_correct_response_when_followee_does_not_exist(
@@ -117,4 +125,8 @@ def test_create_following_returns_404_with_correct_response_when_followee_does_n
     response = client.post("/followings", headers=headers, json=json)
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Account not found"}
+    assert response.json() == {
+        "resource": "Account",
+        "description": "Requested resource not found.",
+        "detail": "Requested resource doesn't exist or has been deleted.",
+    }

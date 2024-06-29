@@ -9,10 +9,10 @@ from sqlalchemy import DateTime, Enum, Integer, select, String
 from sqlalchemy.orm import Mapped, mapped_column, Session
 
 from src.files.enums import Extension, MimeType
+from src.files.exceptions import FileNotFoundException
 from src.files.schemas import FileData
 from src.shared.database import Base
 from src.shared.datetime import utcnow
-from src.shared.exceptions import NotFoundException
 
 
 if TYPE_CHECKING:
@@ -55,8 +55,7 @@ class File(Base):
         query = select(File).where(File.id == file_id)
         row = db.execute(query).one_or_none()
         if row is None:
-            msg = "Requested file not found."
-            raise NotFoundException(msg)
+            raise FileNotFoundException
         file: File = row.File
         return file
 

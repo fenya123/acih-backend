@@ -4,9 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from fastapi import HTTPException, status
-
 from src.account.models import Account
+from src.profile.exceptions import UpdateNotOwnedProfileException
 from src.profile.models import Profile as ProfileModel
 from src.profile.schemas import Profile, Profiles
 
@@ -21,7 +20,7 @@ if TYPE_CHECKING:
 def update_profile(account_id: int, db: Session, profile_data: ProfileData, token: TokenPayload) -> Profile:
     """Update profile data."""
     if token.account_id != account_id:
-        raise HTTPException(status.HTTP_403_FORBIDDEN, "No rights to perform that action")
+        raise UpdateNotOwnedProfileException
 
     account = Account.get(account_id=account_id, db=db)
     account.profile.update(profile_data=profile_data, db=db)

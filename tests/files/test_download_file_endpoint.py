@@ -16,4 +16,8 @@ def test_download_file_with_nonexistent_file_returns_404_with_correct_message(cl
     response = client.get("/files/1337")
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "Requested file not found."}
+    assert response.json() == {
+        "resource": "File",
+        "description": "Requested resource not found.",
+        "detail": "Requested resource doesn't exist or has been deleted.",
+    }

@@ -29,7 +29,11 @@ def test_remove_followee_returns_403_with_correct_response_when_follower_id_does
     response = client.delete("/accounts/3/followees/2", headers=headers)
 
     assert response.status_code == 403
-    assert response.json() == {"detail": "No rights to perform that action."}
+    assert response.json() == {
+        "action": "Remove following",
+        "description": "Requested action not allowed.",
+        "detail": "Provided tokens or credentials don't grant you enough access rights.",
+    }
 
 
 def test_remove_followee_returns_404_with_correct_response_when_account_does_not_have_followee_with_id_provided(
@@ -40,4 +44,8 @@ def test_remove_followee_returns_404_with_correct_response_when_account_does_not
     response = client.delete("/accounts/1/followees/10000", headers=headers)
 
     assert response.status_code == 404
-    assert response.json() == {"detail": "No followee with that id."}
+    assert response.json() == {
+        "resource": "Following",
+        "description": "Requested resource not found.",
+        "detail": "Requested resource doesn't exist or has been deleted.",
+    }
